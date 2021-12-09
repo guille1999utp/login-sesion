@@ -11,6 +11,11 @@ const userSchema = new Schema({
         unique: true,
         trim: true
     },
+    online:{
+        type: Boolean,
+        required : true,
+        default: false
+    },
     fechnacimiento:{
         type: Date,
         required : true,
@@ -28,5 +33,11 @@ const userSchema = new Schema({
         default : Date.now
 }}
 );
+
+userSchema.method('toJSON', function(){
+    const { __V, _id, password, ...object} = this.toObject();
+    object.uid = _id;
+    return object;
+})
 
 module.exports = model('Usuario', userSchema);
