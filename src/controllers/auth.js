@@ -6,7 +6,7 @@ const { generarjwt } = require('../helpers/jwt');
 const Crearusuario = async (req, res = response)=>{
 
     try{
-        const { correo } = req.body;
+        const { correo, password } = req.body;
         const existecorreo = await Usuario.findOne({ correo });
         if(existecorreo){
         return res.status(400).json({
@@ -19,7 +19,7 @@ const Crearusuario = async (req, res = response)=>{
         newuser.password = bcryptjs.hashSync(password , salt);
         await newuser.save();
 
-        const token = generarjwt( newuser.id)
+        const token = await generarjwt( newuser.id)
         res.json({
             ok: true,
             newuser,

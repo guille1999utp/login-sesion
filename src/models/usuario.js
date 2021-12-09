@@ -21,17 +21,14 @@ const userSchema = new Schema({
         required : true,
     },
     password:{
-       type: String
+       type: String,
+       required : true,
+
     },
     creacion : {
         type: Date,
         default: Date.now
-    }, 
-    fechcreacion:{
-        type: Date,
-        required : true,
-        default : Date.now
-}}
+    }}
 );
 
 userSchema.method('toJSON', function(){
