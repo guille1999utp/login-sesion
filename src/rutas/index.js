@@ -1,9 +1,11 @@
 const { Router } = require('express');
 const router = Router();
 
-const { Crearusuario, InicioSesion } = require('../controllers/auth');
+const { Crearusuario, InicioSesion, renovar } = require('../controllers/auth');
 const { check } = require('express-validator');
 const { validacioncampos } = require('../middlewares/validador-de-campos');
+const { validarjwt } = require('../helpers/regenerarjwt');
+
 
 /* router.get('/users',async(req, res)=>{
     const usuarios = await Usuario.find();
@@ -40,12 +42,14 @@ router.post('/register', [
 ],Crearusuario);
 
 
-router.delete('/user/:id',async (req, res)=>{
+/* router.delete('/user/:id',async (req, res)=>{
    await Usuario.findByIdAndDelete(req.params.id);
    res.json({
     message : 'usuario eliminado'
 });
-});
+}); */
+
+router.get('/renovacion', validarjwt , renovar );
 
 
 module.exports = router;

@@ -23,4 +23,4 @@ Mensaje.method('toJSON', function(){
     return object;
 })
 
-module.exports = model('Usuario', userSchema);
+module.exports = model('Mensaje', Mensaje);
