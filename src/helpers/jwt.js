@@ -16,6 +16,16 @@ return new Promise((resolve, reject)=>{
 
 })
 }
+
+const comprobacionJWT = (token = '') =>{
+    try {
+        const {uid} = jwt.verify(token, process.env.JWT_clave);
+        return [true, uid]
+    } catch (error) {
+        return [true, null]
+    }
+    }
 module.exports = {
-    generarjwt
+    generarjwt,
+    comprobacionJWT
 }
