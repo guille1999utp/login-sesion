@@ -22,7 +22,7 @@ const comprobacionJWT = (token = '') =>{
         const {uid} = jwt.verify(token, process.env.JWT_clave);
         return [true, uid]
     } catch (error) {
-        return [true, null]
+        return [false, null]
     }
     }
 module.exports = {
