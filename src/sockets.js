@@ -36,10 +36,11 @@ class Sockets {
             // TODO: Disconnect
             // Marcar en la BD que el usuario se desconecto
             // TODO: Emitir todos los usuarios conectados
-             socket.on('disconnect',()=>{
+             socket.on('disconnect',async ()=>{
                  console.log('cliente desconectado')
                  userdesconectado(uid);
-             })
+                 this.io.emit('lista-usuarios',await usuariosactivos());
+                })
             
         
         }
