@@ -1,4 +1,6 @@
 const Usuario = require('../models/usuario');
+const Mensaje = require('../models/mensaje');
+
 const userconectado = async(uid) =>{
     const usuario = await Usuario.findById(uid);
     usuario.online = true;
@@ -15,8 +17,19 @@ const usuariosactivos = async() =>{
     const usuarios = await Usuario.find().sort('-online')
     return usuarios;
 }
+const savemessage = async(mensaje) =>{
+    try {
+        const mensaj = new Mensaje(mensaje);
+        await mensaj.save();
+        return mensaj;
+    } catch (error) {
+        console.log(error)
+    }
+  
+}
 module.exports = {
     userconectado,
     userdesconectado,
-    usuariosactivos
+    usuariosactivos,
+    savemessage
 }
