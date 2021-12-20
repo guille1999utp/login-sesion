@@ -1,9 +1,10 @@
 const {Schema,model} = require('mongoose');
+
 const ordenarProducto = new Schema({
-    categoria:  {
-        type: String,
-        required : true,
-        trim: true,
+    de:  {
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario',
+        required: true
     },
     nombre:  {
         type: String,
@@ -16,26 +17,26 @@ const ordenarProducto = new Schema({
         unique: true,
         trim: true
     },
-    diareq:{
+    fecha:{
         type: Date,
-        required : true,
-        default: false
-    },
-    password:{
-       type: String,
-       required : true,
-
+        required : true
     },
     urlfoto:{
         type: String,
         required : true,
  
-     }},{
+     },
+     categoria:  {
+        type: String,
+        required : true,
+        trim: true,
+    },
+    },{
         timestamps : true
     }
 );
 
-userSchema.method('toJSON', function(){
+ordenarProducto.method('toJSON', function(){
     const { __V, _id, password, ...object} = this.toObject();
     object.oid = _id;
     return object;
