@@ -1,4 +1,4 @@
-const { userconectado, userdesconectado, usuariosactivos,savemessage,subirproducto } = require("./helpers/eventoSockets");
+const { userconectado, userdesconectado, usuariosactivos,savemessage,subirproducto, eliminarproducto } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 
 
@@ -33,9 +33,16 @@ class Sockets {
                this.io.to(payload.de).emit('mensaje',mensaje);
             })
             //subir producto que se ordenara
-            socket.on('orden', async (payload)=>{
-                const producto = await subirproducto(payload);
+            socket.on('orden', async ({solicitud, url})=>{
+                console.log(solicitud, url)
+                solicitud.urlfoto = url;
+                const producto = await subirproducto(solicitud);
                 this.io.emit('orden',producto);
+             })
+       //cuando un cliente elimina un producto 
+             socket.on('eliminarorden', async (oid)=>{
+                await eliminarproducto(oid);
+                this.io.emit('eliminarorden',oid);
              })
              //cuando el cliente se desconecta emite a todos que el cliente se desconecto
              socket.on('disconnect',async ()=>{

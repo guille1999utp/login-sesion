@@ -14,12 +14,11 @@ const ordenarProducto = new Schema({
     descripsion:{
         type: String,
         required : true,
-        unique: true,
         trim: true
     },
     fecha:{
         type: Date,
-        required : true
+        required : true, 
     },
     urlfoto:{
         type: String,

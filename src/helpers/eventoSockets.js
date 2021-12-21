@@ -28,10 +28,9 @@ const savemessage = async(mensaje) =>{
         console.log(error)
     }
 }
-const subirproducto = async(data) =>{
-   const { solicitud } = data;
-   console.log(solicitud);
-    try {
+const subirproducto = async(solicitud) =>{
+ console.log(solicitud);  
+ try {
        const producto = new Ordenproducto(solicitud);
        await producto.save();
        return producto;
@@ -41,10 +40,22 @@ const subirproducto = async(data) =>{
     
 }
 
+const eliminarproducto = async (req,res) => {
+    try {
+        const producto = await Ordenproducto.findByIdAndDelete( req );
+        res.json({
+            ok:true,
+            producto:producto.oid
+        })
+    } catch (error) {
+        console.log(error)
+    }
+    }
 module.exports = {
     userconectado,
     userdesconectado,
     usuariosactivos,
     savemessage,
-    subirproducto
+    subirproducto,
+    eliminarproducto
 }
