@@ -29,7 +29,6 @@ const savemessage = async(mensaje) =>{
     }
 }
 const subirproducto = async(solicitud) =>{
- console.log(solicitud);  
  try {
        const producto = new Ordenproducto(solicitud);
        await producto.save();
@@ -42,11 +41,7 @@ const subirproducto = async(solicitud) =>{
 
 const eliminarproducto = async (req,res) => {
     try {
-        const producto = await Ordenproducto.findByIdAndDelete( req );
-        res.json({
-            ok:true,
-            producto:producto.oid
-        })
+        await Ordenproducto.findByIdAndDelete( req );
     } catch (error) {
         console.log(error)
     }

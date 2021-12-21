@@ -34,8 +34,8 @@ class Sockets {
             })
             //subir producto que se ordenara
             socket.on('orden', async ({solicitud, url})=>{
-                console.log(solicitud, url)
-                solicitud.urlfoto = url;
+                solicitud.urlfoto = url.secure_url;
+                solicitud.idfoto = url.public_id;
                 const producto = await subirproducto(solicitud);
                 this.io.emit('orden',producto);
              })

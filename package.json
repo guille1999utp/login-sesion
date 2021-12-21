@@ -12,6 +12,7 @@
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.27.1",
     "connect-flash": "^0.1.1",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",

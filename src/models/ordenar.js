@@ -23,7 +23,11 @@ const ordenarProducto = new Schema({
     urlfoto:{
         type: String,
         required : true,
- 
+     },
+     idfoto:{
+        type: String,
+        required : true,
+        unique: true
      },
      categoria:  {
         type: String,
