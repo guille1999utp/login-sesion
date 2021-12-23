@@ -1,4 +1,5 @@
 const Ordenproducto = require('../models/ordenar');
+const cloudinary = require('../utils/cloudinary');
 
 const ordenemisor = async (req,res) => {
 const miId = req.uid;
@@ -14,6 +15,19 @@ try {
 }
 }
 
+const eliminarfoto = async (req,res) => {
+    const foto = req.header('idfoto');
+    try {
+       const resf = await cloudinary.cloudinary.uploader.destroy(foto, {type : 'upload', resource_type : 'image'},  results =>{
+           return results
+       });
+        res.json(resf)
+    } catch (error) {
+        console.log(error)
+    }
+    }
+
 module.exports ={
-    ordenemisor
+    ordenemisor,
+    eliminarfoto
 }

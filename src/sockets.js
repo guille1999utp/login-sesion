@@ -1,6 +1,6 @@
 const { userconectado, userdesconectado, usuariosactivos,savemessage,subirproducto, eliminarproducto } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
-
+const cloudinary = require('./utils/cloudinary');
 
 class Sockets {
 
@@ -39,10 +39,17 @@ class Sockets {
                 const producto = await subirproducto(solicitud);
                 this.io.emit('orden',producto);
              })
-       //cuando un cliente elimina un producto 
-             socket.on('eliminarorden', async (oid)=>{
-                await eliminarproducto(oid);
-                this.io.emit('eliminarorden',oid);
+            //cuando un cliente elimina un producto 
+             socket.on('eliminarorden', async ({oid,idfoto})=>{
+                 try {     
+                     await cloudinary.cloudinary.uploader.destroy(idfoto, {type : 'upload', resource_type : 'image'}, (res)=>{
+                         return res;
+                    });
+                     await eliminarproducto(oid);
+                     this.io.emit('eliminarorden',oid);
+                 } catch (error) {
+                     console.log(error);
+                 }
              })
              //cuando el cliente se desconecta emite a todos que el cliente se desconecto
              socket.on('disconnect',async ()=>{
