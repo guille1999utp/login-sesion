@@ -18,6 +18,8 @@ app.use(express.json());
 app.use(require('./rutas/index'))
 app.use(require('./rutas/mensajes'))
 app.use(require('./rutas/ordenar'))
+app.use(require('./rutas/solicitudes'))
+
 
 server.listen(app.get('port'),()=>{
     console.log('escuchando en el puerto ', app.get('port'));

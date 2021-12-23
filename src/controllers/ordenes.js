@@ -1,5 +1,4 @@
 const Ordenproducto = require('../models/ordenar');
-const cloudinary = require('../utils/cloudinary');
 
 const ordenemisor = async (req,res) => {
 const miId = req.uid;
