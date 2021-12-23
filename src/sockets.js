@@ -1,7 +1,7 @@
 const { userconectado, userdesconectado, usuariosactivos,savemessage,subirproducto, eliminarproducto } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 const cloudinary = require('./utils/cloudinary');
-
+const {nanoid} = require('nanoid');
 class Sockets {
 
     constructor( io ) {
@@ -35,7 +35,7 @@ class Sockets {
             //subir producto que se ordenara
             socket.on('orden', async ({solicitud, url})=>{
                 solicitud.urlfoto = url.secure_url;
-                solicitud.idfoto = url.public_id;
+                solicitud.idfoto = (url.public_id===0)?nanoid():url.public_id;
                 const producto = await subirproducto(solicitud);
                 this.io.emit('orden',producto);
              })

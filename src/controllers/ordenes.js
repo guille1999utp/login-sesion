@@ -15,19 +15,7 @@ try {
 }
 }
 
-const eliminarfoto = async (req,res) => {
-    const foto = req.header('idfoto');
-    try {
-       const resf = await cloudinary.cloudinary.uploader.destroy(foto, {type : 'upload', resource_type : 'image'},  results =>{
-           return results
-       });
-        res.json(resf)
-    } catch (error) {
-        console.log(error)
-    }
-    }
 
 module.exports ={
-    ordenemisor,
-    eliminarfoto
+    ordenemisor
 }
