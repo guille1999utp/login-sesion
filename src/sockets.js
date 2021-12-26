@@ -43,6 +43,7 @@ class Sockets {
              socket.on('fotouser', async ({url,uid})=>{
                 await actualizarfotoperfil(url,uid);
                 this.io.to(uid).emit('fotouser',url.secure_url);
+                this.io.emit('lista-usuarios',await usuariosactivos());
              })
             //cuando un cliente elimina un producto 
              socket.on('eliminarorden', async ({oid,idfoto})=>{

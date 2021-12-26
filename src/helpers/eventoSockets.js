@@ -40,11 +40,12 @@ const subirproducto = async(solicitud) =>{
 }
 const actualizarfotoperfil = async(url,uid) =>{
     try {
-
         const fotoeliminar = await Usuario.findById(uid);
-        await cloudinary.cloudinary.uploader.destroy(fotoeliminar.uidfoto, {type : 'upload', resource_type : 'image'}, (res)=>{
-            return res;
-       });
+        if(!!fotoeliminar.uidfoto){
+            await cloudinary.cloudinary.uploader.destroy(fotoeliminar.uidfoto, {type : 'upload', resource_type : 'image'}, (res)=>{
+                return res;
+           });
+        }
         const usuario = await Usuario.findByIdAndUpdate(uid,{
             urlfoto:url.secure_url,
             uidfoto: url.public_id
