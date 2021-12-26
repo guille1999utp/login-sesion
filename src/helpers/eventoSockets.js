@@ -1,7 +1,7 @@
 const Usuario = require('../models/usuario');
 const Mensaje = require('../models/mensaje');
 const Ordenproducto = require('../models/ordenar');
-
+const cloudinary = require('../utils/cloudinary');
 
 const userconectado = async(uid) =>{
     const usuario = await Usuario.findById(uid);
@@ -38,7 +38,22 @@ const subirproducto = async(solicitud) =>{
    }
     
 }
+const actualizarfotoperfil = async(url,uid) =>{
+    try {
 
+        const fotoeliminar = await Usuario.findById(uid);
+        await cloudinary.cloudinary.uploader.destroy(fotoeliminar.uidfoto, {type : 'upload', resource_type : 'image'}, (res)=>{
+            return res;
+       });
+        const usuario = await Usuario.findByIdAndUpdate(uid,{
+            urlfoto:url.secure_url,
+            uidfoto: url.public_id
+        });
+      } catch (error) {
+       console.log(error);
+      }
+       
+   }
 const eliminarproducto = async (req,res) => {
     try {
         await Ordenproducto.findByIdAndDelete( req );
@@ -52,5 +67,6 @@ module.exports = {
     usuariosactivos,
     savemessage,
     subirproducto,
-    eliminarproducto
+    eliminarproducto,
+    actualizarfotoperfil
 }

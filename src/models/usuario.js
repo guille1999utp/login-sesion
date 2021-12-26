@@ -5,6 +5,16 @@ const userSchema = new Schema({
         required : true,
         trim: true,
     },
+    urlfoto:  {
+        type: String,
+        trim: true,
+        default: 'https://res.cloudinary.com/dmgfep69f/image/upload/v1640536316/orgeial7kefv2dzsdqqt.webp'
+    },
+    uidfoto:  {
+        type: String,
+        trim: true,
+        unique: true
+    },
     correo:{
         type: String,
         required : true,

@@ -1,4 +1,4 @@
-const { userconectado, userdesconectado, usuariosactivos,savemessage,subirproducto, eliminarproducto } = require("./helpers/eventoSockets");
+const { userconectado, userdesconectado, usuariosactivos,savemessage,subirproducto, eliminarproducto, actualizarfotoperfil } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 const cloudinary = require('./utils/cloudinary');
 const {nanoid} = require('nanoid');
@@ -38,6 +38,11 @@ class Sockets {
                 solicitud.idfoto = (url.public_id===0)?nanoid():url.public_id;
                 const producto = await subirproducto(solicitud);
                 this.io.emit('orden',producto);
+             })
+            //actualizar foto de perfil
+             socket.on('fotouser', async ({url,uid})=>{
+                await actualizarfotoperfil(url,uid);
+                this.io.to(uid).emit('fotouser',url.secure_url);
              })
             //cuando un cliente elimina un producto 
              socket.on('eliminarorden', async ({oid,idfoto})=>{
