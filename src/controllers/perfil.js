@@ -17,6 +17,23 @@ try {
     })
 }
 }
+const miperfil = async (req,res) => {
+    const miId = req.uid;
+    try {
+        const user = await Usuario.findById( miId );
+        res.json({
+            ok:true,
+            infoadicional:user.infoadicional
+        })
+    } catch (error) {
+        console.log(error);
+        res.json({
+            ok:false,
+            msg:'no se encontro perfil'
+        })
+    }
+    }
+    
 const modificacionPerfil = async (req,res) => {
     const miId = req.uid;
     try {
@@ -34,5 +51,6 @@ const modificacionPerfil = async (req,res) => {
 
 module.exports ={
     modificacionPerfil,
-    perfilUsuario
+    perfilUsuario,
+    miperfil
 }
