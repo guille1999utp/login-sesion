@@ -24,6 +24,11 @@ const userSchema = new Schema({
             Representantelegal:''
         }
     },
+    fotosdescripsion:  {
+        type: Map,
+        of:String,
+        default:{ }
+    },
     urlfoto:  {
         type: String,
         trim: true,

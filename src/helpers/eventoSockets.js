@@ -55,6 +55,16 @@ const actualizarfotoperfil = async(url,uid) =>{
       }
        
    }
+   const agregarfotouser = async(url,uid) =>{
+    try {
+        const agregarinformacion = await Usuario.findById(uid);
+        console.log(agregarinformacion.fotosdescripsion);
+        console.log(agregarinformacion);
+      } catch (error) {
+       console.log(error);
+      }
+       
+   }
 const eliminarproducto = async (req,res) => {
     try {
         await Ordenproducto.findByIdAndDelete( req );
@@ -69,5 +79,6 @@ module.exports = {
     savemessage,
     subirproducto,
     eliminarproducto,
-    actualizarfotoperfil
+    actualizarfotoperfil,
+    agregarfotouser
 }
