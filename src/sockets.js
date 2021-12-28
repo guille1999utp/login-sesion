@@ -1,4 +1,4 @@
-const { userconectado, userdesconectado, usuariosactivos,savemessage,subirproducto, eliminarproducto, actualizarfotoperfil,agregarfotouser } = require("./helpers/eventoSockets");
+const { userconectado, userdesconectado, usuariosactivos,savemessage,subirproducto, eliminarproducto, actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 const cloudinary = require('./utils/cloudinary');
 const {nanoid} = require('nanoid');
@@ -48,6 +48,17 @@ class Sockets {
              //agregar foto adicional usuario
              socket.on('fotouseradicional', async ({url,uid})=>{
                 await agregarfotouser(url,uid);
+             })
+             //eliminar foto
+             socket.on('fotousereliminar', async ({uidfoto,uid})=>{
+                try {     
+                    await cloudinary.cloudinary.uploader.destroy(uidfoto, {type : 'upload', resource_type : 'image'}, (res)=>{
+                        return res;
+                   });
+                   await eliminarfotouser({uidfoto,uid});
+                } catch (error) {
+                    console.log(error);
+                }
              })
             //cuando un cliente elimina un producto 
              socket.on('eliminarorden', async ({oid,idfoto})=>{

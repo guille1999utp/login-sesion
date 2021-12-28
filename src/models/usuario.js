@@ -25,9 +25,8 @@ const userSchema = new Schema({
         }
     },
     fotosdescripsion:  {
-        type: Map,
-        of:String,
-        default:{ }
+        type: Array,
+        default:[]
     },
     urlfoto:  {
         type: String,

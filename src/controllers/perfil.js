@@ -23,7 +23,8 @@ const miperfil = async (req,res) => {
         const user = await Usuario.findById( miId );
         res.json({
             ok:true,
-            infoadicional:user.infoadicional
+            infoadicional:user.infoadicional,
+            fotosdescripsion: user.fotosdescripsion
         })
     } catch (error) {
         console.log(error);
@@ -33,7 +34,7 @@ const miperfil = async (req,res) => {
         })
     }
     }
-    
+
 const modificacionPerfil = async (req,res) => {
     const miId = req.uid;
     try {

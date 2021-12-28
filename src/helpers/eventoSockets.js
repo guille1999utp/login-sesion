@@ -46,7 +46,7 @@ const actualizarfotoperfil = async(url,uid) =>{
                 return res;
            });
         }
-        const usuario = await Usuario.findByIdAndUpdate(uid,{
+        await Usuario.findByIdAndUpdate(uid,{
             urlfoto:url.secure_url,
             uidfoto: url.public_id
         });
@@ -57,9 +57,20 @@ const actualizarfotoperfil = async(url,uid) =>{
    }
    const agregarfotouser = async(url,uid) =>{
     try {
-        const agregarinformacion = await Usuario.findById(uid);
-        console.log(agregarinformacion.fotosdescripsion);
-        console.log(agregarinformacion);
+        await Usuario.findByIdAndUpdate(uid,{
+         $addToSet: { fotosdescripsion : {urlfoto:url.secure_url, uidfoto: url.public_id} }  
+        });
+      } catch (error) {
+       console.log(error);
+      }
+       
+   }
+   const eliminarfotouser = async({uidfoto,uid}) =>{
+    try {
+        const res = await Usuario.findOneAndUpdate({_id: uid},{
+            $pull:{ fotosdescripsion : {uidfoto: uidfoto}} 
+        });
+        console.log(res)
       } catch (error) {
        console.log(error);
       }
@@ -80,5 +91,6 @@ module.exports = {
     subirproducto,
     eliminarproducto,
     actualizarfotoperfil,
-    agregarfotouser
+    agregarfotouser,
+    eliminarfotouser
 }
