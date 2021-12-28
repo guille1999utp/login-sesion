@@ -19,6 +19,7 @@ app.use(require('./rutas/index'))
 app.use(require('./rutas/mensajes'))
 app.use(require('./rutas/ordenar'))
 app.use(require('./rutas/solicitudes'))
+app.use(require('./rutas/perfil'))
 
 
 server.listen(app.get('port'),()=>{

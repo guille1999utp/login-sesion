@@ -5,6 +5,25 @@ const userSchema = new Schema({
         required : true,
         trim: true,
     },
+    infoadicional:  {
+        type: Map,
+        of:String,
+        default:{
+            Direccion:'',
+            Barrio:'',
+            Nit:'',
+            Privado:'',
+            celular:'',
+            telefono:'',
+            Servicio:'',
+            tencion:'',
+            Venta:'',
+            Funcionamiento:'',
+            Gerente:'',
+            cedulaGerente:'',
+            Representantelegal:''
+        }
+    },
     urlfoto:  {
         type: String,
         trim: true,
