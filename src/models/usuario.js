@@ -9,6 +9,7 @@ const userSchema = new Schema({
         type: Map,
         of:String,
         default:{
+            Cordenadas:'',
             Direccion:'',
             Barrio:'',
             Nit:'',
@@ -21,7 +22,7 @@ const userSchema = new Schema({
             Funcionamiento:'',
             Gerente:'',
             cedulaGerente:'',
-            Representantelegal:''
+            Representantelegal:'',
         }
     },
     fotosdescripsion:  {
@@ -45,6 +46,11 @@ const userSchema = new Schema({
         trim: true
     },
     online:{
+        type: Boolean,
+        required : true,
+        default: false
+    },
+    verificado:{
         type: Boolean,
         required : true,
         default: false

@@ -48,6 +48,7 @@ class Sockets {
              //agregar foto adicional usuario
              socket.on('fotouseradicional', async ({url,uid})=>{
                 await agregarfotouser(url,uid);
+                this.io.to(uid).emit('fotouseradicional',{urlfoto:url.secure_url, uidfoto:url.public_id});
              })
              //eliminar foto
              socket.on('fotousereliminar', async ({uidfoto,uid})=>{
@@ -56,6 +57,7 @@ class Sockets {
                         return res;
                    });
                    await eliminarfotouser({uidfoto,uid});
+                   this.io.to(uid).emit('fotousereliminar',uidfoto);
                 } catch (error) {
                     console.log(error);
                 }

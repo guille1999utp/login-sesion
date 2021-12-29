@@ -67,10 +67,9 @@ const actualizarfotoperfil = async(url,uid) =>{
    }
    const eliminarfotouser = async({uidfoto,uid}) =>{
     try {
-        const res = await Usuario.findOneAndUpdate({_id: uid},{
+       await Usuario.findOneAndUpdate({_id: uid},{
             $pull:{ fotosdescripsion : {uidfoto: uidfoto}} 
         });
-        console.log(res)
       } catch (error) {
        console.log(error);
       }
