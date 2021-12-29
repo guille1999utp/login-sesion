@@ -7,7 +7,11 @@ try {
     const user = await Usuario.findById( perfil );
     res.json({
         ok:true,
-        infoadicional:user.infoadicional
+        infoadicional:user.infoadicional,
+        fotosdescripsion: user.fotosdescripsion,
+        nombre:user.nombre,
+        urlfoto: user.urlfoto,
+        verificado: user.verificado
     })
 } catch (error) {
     console.log(error);
