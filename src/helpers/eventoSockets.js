@@ -15,9 +15,29 @@ const userdesconectado = async(uid) =>{
     await usuario.save();
     return usuario;
 }
-const usuariosactivos = async() =>{
-    const usuarios = await Usuario.find().sort('-online')
-    return usuarios;
+const usuariosactivos = async(uid) =>{
+    const mensajes = await Mensaje.find({ $or : [{de: uid},{para: uid}]}).sort({createdAt: 'desc'});
+    let arreglouser = [];
+    for (let i = 0; i < mensajes.length; i++) {
+        let dato1=mensajes[i].de+''; 
+        let dato2= mensajes[i].para+'';
+        if(arreglouser.includes(dato1)){
+        }else{
+          arreglouser.push(dato1);
+        }
+        if(arreglouser.includes(dato2)){
+            }else{
+               arreglouser.push(dato2);
+       
+            }
+    }
+    const usuarioschat = [];
+    for (let i = 0; i < arreglouser.length; i++) {
+        const usuarios = await Usuario.findById(arreglouser[i]);
+         usuarioschat.push( usuarios )
+    }
+    
+    return usuarioschat;
 }
 const savemessage = async(mensaje) =>{
     try {

@@ -24,8 +24,9 @@ class Sockets {
            console.log('cliente conectado')
             
             socket.join( uid );
-
-            this.io.emit('lista-usuarios',await usuariosactivos());
+           
+            this.io.emit('lista-usuarios',await usuariosactivos(uid));
+            
             //mandar mensajes a los dos chats que se estan conectando
             socket.on('mensaje', async (payload)=>{
                const mensaje = await savemessage(payload);
