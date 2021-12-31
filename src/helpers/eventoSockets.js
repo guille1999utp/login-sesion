@@ -61,10 +61,12 @@ const subirproducto = async(solicitud) =>{
 }
 
 const subirproductoTodo = async(url,uid,producto) =>{
+    console.log(producto)
     const newproducto = {
+        de: uid,
         titulo: producto.titulo,
         detalles: {
-            Año: producto.Age,
+            Age: producto.Age,
             Categoria: producto.Categoria,
             Ubicaion: producto.Ubicaion,
             DomicilioIncluido: producto.Domicilio,
@@ -77,7 +79,7 @@ const subirproductoTodo = async(url,uid,producto) =>{
     try{
           const producto = new Producto(newproducto);
           await producto.save();
-          console.log( producto );
+          return producto;
       } catch (error) {
        console.log(error);
       }
@@ -120,6 +122,14 @@ const actualizarfotoperfil = async(url,uid) =>{
       }
        
    }
+   const eliminarproductouser = async(pid) =>{
+    try {
+       await Producto.findOneAndDelete({_id: pid});
+      } catch (error) {
+       console.log(error);
+      }
+       
+   }
 const eliminarproducto = async (req,res) => {
     try {
         await Ordenproducto.findByIdAndDelete( req );
@@ -137,5 +147,6 @@ module.exports = {
     actualizarfotoperfil,
     agregarfotouser,
     eliminarfotouser,
-    subirproductoTodo
+    subirproductoTodo,
+    eliminarproductouser
 }

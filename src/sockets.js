@@ -1,4 +1,4 @@
-const { userconectado, userdesconectado, usuariosactivos,savemessage,subirproducto, eliminarproducto, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
+const { userconectado, userdesconectado, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 const cloudinary = require('./utils/cloudinary');
 const {nanoid} = require('nanoid');
@@ -42,7 +42,28 @@ class Sockets {
              })
               //subir producto con foto 
               socket.on('producto', async ({url,uid,producto})=>{
-                subirproductoTodo(url,uid,producto);
+                const urlconver = {
+                    secure_url: url.secure_url,
+                    public_id: url.public_id
+                }
+                  try{
+                      const productoadi = await subirproductoTodo(urlconver,uid,producto);
+                      this.io.to(uid).emit('producto',productoadi);
+                  }catch (e){
+                      console.log(e);
+                  }
+             })
+               //eliminar producto foto
+               socket.on('productoeliminar', async ({uidfoto,Producto})=>{
+                try {     
+                    await cloudinary.cloudinary.uploader.destroy(uidfoto[0].public_id, {type : 'upload', resource_type : 'image'}, (res)=>{
+                        return res;
+                   });
+                   await eliminarproductouser(Producto.pid);
+                   this.io.to(Producto.de).emit('productoeliminar',Producto.pid);
+                } catch (error) {
+                    console.log(error);
+                }
              })
             //actualizar foto de perfil
              socket.on('fotouser', async ({url,uid})=>{

@@ -1,15 +1,19 @@
 const {Schema,model} = require('mongoose');
 const puroductoSchema = new Schema({
+    de:  {
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario',
+        required: true
+    },
     titulo:  {
         type: String,
         required : true,
         trim: true,
     },
     detalles:  {
-        type: Map,
-        of:String,
+        type: Array,
         default:{
-            Año:'',
+            Age:'',
             Categoria:'',
             Ubicaion:'',
             DomicilioIncluido:'',
