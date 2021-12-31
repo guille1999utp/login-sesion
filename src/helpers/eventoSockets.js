@@ -1,6 +1,7 @@
 const Usuario = require('../models/usuario');
 const Mensaje = require('../models/mensaje');
 const Ordenproducto = require('../models/ordenar');
+const Producto = require('../models/producto');
 const cloudinary = require('../utils/cloudinary');
 
 const userconectado = async(uid) =>{
@@ -58,6 +59,30 @@ const subirproducto = async(solicitud) =>{
    }
     
 }
+
+const subirproductoTodo = async(url,uid,producto) =>{
+    const newproducto = {
+        titulo: producto.titulo,
+        detalles: {
+            Año: producto.Age,
+            Categoria: producto.Categoria,
+            Ubicaion: producto.Ubicaion,
+            DomicilioIncluido: producto.Domicilio,
+            Garantia: producto.Garantia
+        },
+        fotosdescripsion: [url],
+        textdescripsion: producto.descripsion
+    }
+    console.log(newproducto)
+    try{
+          const producto = new Producto(newproducto);
+          await producto.save();
+          console.log( producto );
+      } catch (error) {
+       console.log(error);
+      }
+       
+   }
 const actualizarfotoperfil = async(url,uid) =>{
     try {
         const fotoeliminar = await Usuario.findById(uid);
@@ -111,5 +136,6 @@ module.exports = {
     eliminarproducto,
     actualizarfotoperfil,
     agregarfotouser,
-    eliminarfotouser
+    eliminarfotouser,
+    subirproductoTodo
 }

@@ -30,8 +30,8 @@ const puroductoSchema = new Schema({
     }}
 );
 
-userSchema.method('toJSON', function(){
-    const { __V, _id, password, ...object} = this.toObject();
+puroductoSchema.method('toJSON', function(){
+    const { __V, _id, ...object} = this.toObject();
     object.pid = _id;
     return object;
 })
