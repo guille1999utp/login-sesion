@@ -40,6 +40,10 @@ class Sockets {
                 const producto = await subirproducto(solicitud);
                 this.io.emit('orden',producto);
              })
+              //subir producto con foto 
+              socket.on('producto', async ({url,uid,producto})=>{
+               console.log(url,uid,producto)
+             })
             //actualizar foto de perfil
              socket.on('fotouser', async ({url,uid})=>{
                 await actualizarfotoperfil(url,uid);

@@ -1,5 +1,5 @@
 const {Schema,model} = require('mongoose');
-const uroductoSchema = new Schema({
+const puroductoSchema = new Schema({
     titulo:  {
         type: String,
         required : true,
@@ -36,4 +36,4 @@ userSchema.method('toJSON', function(){
     return object;
 })
 
-module.exports = model('Usuario', uroductoSchema);
+module.exports = model('Producto', puroductoSchema);
