@@ -130,6 +130,14 @@ const actualizarfotoperfil = async(url,uid) =>{
       }
        
    }
+   const modificardatosproducto = async(producto) =>{
+    try {
+       await Producto.findByIdAndUpdate(producto.pid,producto);
+      } catch (error) {
+       console.log(error);
+      }
+       
+   }
 const eliminarproducto = async (req,res) => {
     try {
         await Ordenproducto.findByIdAndDelete( req );
@@ -138,6 +146,7 @@ const eliminarproducto = async (req,res) => {
     }
     }
 module.exports = {
+    modificardatosproducto,
     userconectado,
     userdesconectado,
     usuariosactivos,
