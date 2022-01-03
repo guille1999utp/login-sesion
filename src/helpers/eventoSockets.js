@@ -130,8 +130,19 @@ const actualizarfotoperfil = async(url,uid) =>{
       }
        
    }
-   const modificardatosproducto = async(producto) =>{
+   const modificardatosproducto = async(producto,url) =>{
+      
     try {
+        
+       if(url !== null){
+        await cloudinary.cloudinary.uploader.destroy(producto.fotosdescripsion[0].public_id, {type : 'upload', resource_type : 'image'}, (res)=>{
+            return res;
+       });
+        producto.fotosdescripsion[0] = {
+            secure_url: url.secure_url,
+            public_id: url.public_id
+        }
+    }
        await Producto.findByIdAndUpdate(producto.pid,producto);
       } catch (error) {
        console.log(error);

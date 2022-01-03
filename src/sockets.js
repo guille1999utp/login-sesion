@@ -55,9 +55,9 @@ class Sockets {
              })
              
              //modificar producto foto
-             socket.on('productomodificar', async ({Producto})=>{
+             socket.on('productomodificar', async ({Producto,url})=>{
                 try {     
-                   await modificardatosproducto(Producto);
+                   await modificardatosproducto(Producto,url);
                    this.io.to(Producto.de).emit('productomodificar',Producto);
                 } catch (error) {
                     console.log(error);
