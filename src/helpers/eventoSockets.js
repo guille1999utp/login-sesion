@@ -85,6 +85,33 @@ const subirproductoTodo = async(url,uid,producto) =>{
       }
        
    }
+
+   const adicionarfotoproducto = async(url,pid) =>{
+       try{
+           const producto = await Producto.findByIdAndUpdate(pid,{
+            $addToSet: { fotosdescripsion : {secure_url:url.secure_url, public_id: url.public_id} }  
+           });
+           return producto;
+        } catch (error) {
+            console.log(error);
+        }
+   }
+
+   const eliminarfotoproductoadicional = async(url,pid) =>{
+    try{
+        await Producto.findByIdAndUpdate(pid,{
+         $pull: { fotosdescripsion : {public_id: url.public_id} }  
+        });
+        await cloudinary.cloudinary.uploader.destroy(url.public_id, {type : 'upload', resource_type : 'image'}, (res)=>{
+            return res;
+       });
+     } catch (error) {
+         console.log(error);
+     }
+    }
+
+
+
 const actualizarfotoperfil = async(url,uid) =>{
     try {
         const fotoeliminar = await Usuario.findById(uid);
@@ -158,6 +185,7 @@ const eliminarproducto = async (req,res) => {
     }
 module.exports = {
     modificardatosproducto,
+    eliminarfotoproductoadicional,
     userconectado,
     userdesconectado,
     usuariosactivos,
@@ -168,5 +196,6 @@ module.exports = {
     agregarfotouser,
     eliminarfotouser,
     subirproductoTodo,
-    eliminarproductouser
+    eliminarproductouser,
+    adicionarfotoproducto
 }

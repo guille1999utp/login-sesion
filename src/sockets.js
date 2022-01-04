@@ -1,4 +1,4 @@
-const { userconectado, modificardatosproducto, userdesconectado, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
+const { userconectado, modificardatosproducto,eliminarfotoproductoadicional, userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 const cloudinary = require('./utils/cloudinary');
 const {nanoid} = require('nanoid');
@@ -53,7 +53,32 @@ class Sockets {
                       console.log(e);
                   }
              })
-             
+             //subir foto adicional de producto
+             socket.on('subirfotoadicionalproducto', async ({url,pid})=>{
+                const urlconver = {
+                    secure_url: url.secure_url,
+                    public_id: url.public_id
+                }
+                  try{
+                      await adicionarfotoproducto(urlconver,pid);
+                      this.io.to(uid).emit('subirfotoadicionalproducto',urlconver);
+                  }catch (e){
+                      console.log(e);
+                  }
+             })
+               //eliminar foto restar producto
+               socket.on('fotoproductoeliminar', async ({url,pid})=>{
+                const urlconver = {
+                    secure_url: url.secure_url,
+                    public_id: url.public_id
+                }
+                  try{
+                      await eliminarfotoproductoadicional(urlconver,pid);
+                      this.io.to(uid).emit('fotoproductoeliminar',urlconver);
+                  }catch (e){
+                      console.log(e);
+                  }
+             })
              //modificar producto foto
              socket.on('productomodificar', async ({Producto,url})=>{
                 try {     
