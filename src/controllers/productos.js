@@ -24,7 +24,19 @@ try {
     }
     
     const informacionAdicional = async (req,res) => {
-        
+        const producto = req.params.busqueda;
+
+        try {
+            const opcionesbusqueda = await Producto.find({titulo : producto});
+            res.json(opcionesbusqueda)
+        } catch (error) {
+            console.log(error);
+            res.json({
+                ok:false,
+                msg:'no se encontro resultados'
+            })
+        }
+
         }
     
 

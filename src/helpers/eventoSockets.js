@@ -70,7 +70,9 @@ const subirproductoTodo = async(url,uid,producto) =>{
             Categoria: producto.Categoria,
             Ubicaion: producto.Ubicaion,
             DomicilioIncluido: producto.Domicilio,
-            Garantia: producto.Garantia
+            Garantia: producto.Garantia,
+            Precio: producto.Precio,
+            Cantidad: producto.Cantidad
         },
         fotosdescripsion: [url],
         textdescripsion: producto.descripsion
