@@ -1,4 +1,4 @@
-const { userconectado, modificardatosproducto,eliminarfotoproductoadicional, userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
+const { userconectado, modificardatosproducto,eliminarfotoproductoadicional,eliminarparrafoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 const cloudinary = require('./utils/cloudinary');
 const {nanoid} = require('nanoid');
@@ -66,6 +66,24 @@ class Sockets {
                       console.log(e);
                   }
              })
+             //subir Parrafo adicional de producto
+             socket.on('subirparrafonuevo', async ({Parrafo,pid})=>{
+                  try{
+                      await adicionarParrafoproducto(Parrafo,pid);
+                      this.io.to(uid).emit('subirparrafonuevo',Parrafo);
+                  }catch (e){
+                      console.log(e);
+                  }
+             })
+             //eliminar Parrafo de producto
+             socket.on('productoparrafoeliminar', async ({pid,index})=>{
+                try{
+                    await eliminarparrafoproducto(pid,index);
+                    this.io.to(uid).emit('productoparrafoeliminar',index);
+                }catch (e){
+                    console.log(e);
+                }
+           })
                //eliminar foto restar producto
                socket.on('fotoproductoeliminar', async ({url,pid})=>{
                 const urlconver = {
