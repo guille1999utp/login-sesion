@@ -27,13 +27,16 @@ try {
         const producto = req.params.busqueda;
 
         try {
-            const opcionesbusqueda = await Producto.find({titulo : producto});
-            res.json(opcionesbusqueda)
+            const descr = await Producto.find({$or: [{ titulo: { $regex: producto } },{ textdescripsion: { $regex: producto} }] });
+            res.json({
+                ok:true,
+                descr
+                })
         } catch (error) {
             console.log(error);
             res.json({
                 ok:false,
-                msg:'no se encontro resultados'
+                msg:'no se encontro producto'
             })
         }
 
