@@ -14,6 +14,7 @@ new Sockets(io);
 app.use(express.static(path.resolve(__dirname, '../public')));
 app.use(cors());
 app.use(express.json());
+
 //rutas
 app.use(require('./rutas/index'))
 app.use(require('./rutas/mensajes'))

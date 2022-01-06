@@ -25,7 +25,7 @@ try {
     
     const informacionAdicional = async (req,res) => {
         const producto = req.params.busqueda;
-
+      const {nuevo,usado,modelo,ubicacion,min,max,categoria,enviogratis,mayor,menor} = req.query;
         try {
             const descr = await Producto.find({$or: [{ titulo: { $regex: producto } },{ textdescripsion: { $regex: producto} }] });
             res.json({
