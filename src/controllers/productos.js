@@ -25,12 +25,84 @@ try {
     
     const informacionAdicional = async (req,res) => {
         const producto = req.params.busqueda;
-      const {nuevo,usado,modelo,ubicacion,min,max,categoria,enviogratis,mayor,menor} = req.query;
+      const {nuevo = false ,usado = false ,modelo = '',ubicacion = '',Garantia = 0,min = 0,max = 10000000000,categoria = '',enviogratis = 0,mayor = 'false',menor = 'false'} = req.query;
+      console.log(req.query)
         try {
-            const descr = await Producto.find({$or: [{ titulo: { $regex: producto } },{ textdescripsion: { $regex: producto} }] });
+            let filtervar = await Producto.find({$or: [{ titulo: { $regex: producto } },{ textdescripsion: { $regex: producto} }] });
+            const n1 = parseInt(min);
+            const n2 = parseInt(max);
+            if(nuevo === 'true'){
+            filtervar = filtervar.filter(function(producto){
+                return 'true' === producto.detalles[0].nuevo;
+              })
+            }
+            if(usado === 'true'){
+                filtervar = filtervar.filter(function(producto){
+                    return 'false' === producto.detalles[0].nuevo;
+                  })
+                }
+            if(modelo.length !== 0){
+                  filtervar = filtervar.filter(function(producto){
+                    return modelo === producto.detalles[0].Age;
+                 })
+                    }
+             if(ubicacion.length !== 0){
+                  filtervar = filtervar.filter(function(producto){
+                     return ubicacion === producto.detalles[0].Ubicaion;
+                  })
+                     } 
+              if(Garantia !== 0 ){
+                   filtervar = filtervar.filter(function(producto){
+                     return Garantia === producto.detalles[0].Garantia;
+                   })
+                     }     
+             if(n1 !== 0 ){
+                 filtervar = filtervar.filter(function(producto){
+                  const number = parseInt(producto.detalles[0].Precio)
+                  if(number > n1){
+                    return producto;
+                  }else{
+                    console.log('verga')
+                  }
+                 })
+
+                  } 
+                 
+             if(n2 !== 0 ){
+
+                 filtervar = filtervar.filter(function(producto){
+                   const number = parseInt(producto.detalles[0].Precio)
+                   if(number <= n2){
+                     return producto;
+                   }else{
+                     console.log('verga')
+                   }
+                 })
+               }   
+             if(categoria.length !== 0 ){
+                 filtervar = filtervar.filter(function(producto){
+                   return producto.detalles[0].Categoria === categoria;
+                })
+              }   
+
+              if(enviogratis !== 0 ){
+                 filtervar = filtervar.filter(function(producto){
+                   return producto.detalles[0].DomicilioIncluido === enviogratis;
+               })
+             }   
+             if(mayor === 'true' ){
+                filtervar = filtervar.filter(function(producto){
+                  return producto.detalles[0].DomicilioIncluido === enviogratis;
+              })
+            }   
+            if(menor === 'true' ){
+                filtervar = filtervar.filter(function(producto){
+                  return producto.detalles[0].DomicilioIncluido === enviogratis;
+              })
+            }   
             res.json({
                 ok:true,
-                descr
+                filtervar
                 })
         } catch (error) {
             console.log(error);
