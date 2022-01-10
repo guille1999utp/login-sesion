@@ -29,6 +29,10 @@ const userSchema = new Schema({
         type: Array,
         default:[]
     },
+    carrito:  {
+        type: Array,
+        default:[]
+    },
     urlfoto:  {
         type: String,
         trim: true,

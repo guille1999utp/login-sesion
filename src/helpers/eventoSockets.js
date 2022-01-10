@@ -134,7 +134,29 @@ const eliminarparrafoproducto = async(pid,index) =>{
      }
     }
 
-
+    const guardarcarritoproducto = async(uid,pid) =>{
+        let carrito = []
+        try{
+            const user = await Usuario.findById(uid);
+            carrito = [...user.carrito];
+            if( !carrito.includes(pid) ){
+                await Usuario.findByIdAndUpdate(uid,{
+                 $push: { carrito : pid }  
+                });
+                return {
+                    ok:true,
+                    msg: 'Agregado correctamente'
+                }
+            }else{
+                return {
+                    ok:false,
+                    msg: 'ya esta incluido en el carrito'
+                }
+            }
+         } catch (error) {
+             console.log(error);
+         }
+        }
 
 const actualizarfotoperfil = async(url,uid) =>{
     try {
@@ -223,5 +245,6 @@ module.exports = {
     eliminarproductouser,
     adicionarfotoproducto,
     eliminarparrafoproducto,
-    adicionarParrafoproducto
+    adicionarParrafoproducto,
+    guardarcarritoproducto
 }

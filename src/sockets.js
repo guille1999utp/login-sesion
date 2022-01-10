@@ -1,4 +1,4 @@
-const { userconectado, modificardatosproducto,eliminarfotoproductoadicional,eliminarparrafoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
+const { userconectado, modificardatosproducto,eliminarfotoproductoadicional,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 const cloudinary = require('./utils/cloudinary');
 const {nanoid} = require('nanoid');
@@ -84,6 +84,15 @@ class Sockets {
                     console.log(e);
                 }
            })
+            //guardar carrito producto
+            socket.on('guardarcarrito', async ({pid})=>{
+                  try{
+                    const res = await guardarcarritoproducto(uid,pid);
+                    this.io.to(uid).emit('guardarcarrito',res);
+                  }catch (e){
+                      console.log(e);
+                  }
+             })
                //eliminar foto restar producto
                socket.on('fotoproductoeliminar', async ({url,pid})=>{
                 const urlconver = {
