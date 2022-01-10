@@ -26,7 +26,6 @@ try {
     const informacionAdicional = async (req,res) => {
         const producto = req.params.busqueda;
       const {nuevo = false ,usado = false ,modelo = '',ubicacion = '',Garantia = 0,min = 0,max = 10000000000,categoria = '',enviogratis = 0,mayor = 'false',menor = 'false'} = req.query;
-      console.log(req.query)
         try {
             let filtervar = await Producto.find({$or: [{ titulo: { $regex: producto } },{ textdescripsion: { $regex: producto} }] });
             const n1 = parseInt(min);
@@ -91,15 +90,28 @@ try {
                })
              }   
              if(mayor === 'true' ){
-                filtervar = filtervar.filter(function(producto){
-                  return producto.detalles[0].DomicilioIncluido === enviogratis;
-              })
+              filtervar.sort(function (a, b) {
+                if (parseInt(a.detalles[0].Precio) > parseInt(b.detalles[0].Precio)) {
+                  return -1;
+                }
+                if (parseInt(a.detalles[0].Precio) < parseInt(b.detalles[0].Precio)) {
+                  return 1;
+                }
+                return 0;
+              });
             }   
             if(menor === 'true' ){
-                filtervar = filtervar.filter(function(producto){
-                  return producto.detalles[0].DomicilioIncluido === enviogratis;
-              })
+              filtervar.sort(function (a, b) {
+                if (parseInt(a.detalles[0].Precio) > parseInt(b.detalles[0].Precio)) {
+                  return 1;
+                }
+                if (parseInt(a.detalles[0].Precio) < parseInt(b.detalles[0].Precio)) {
+                  return -1;
+                }
+                return 0;
+              });
             }   
+
             res.json({
                 ok:true,
                 filtervar
