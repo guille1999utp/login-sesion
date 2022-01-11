@@ -8,7 +8,25 @@ const userconectado = async(uid) =>{
     const usuario = await Usuario.findById(uid);
     usuario.online = true;
     await usuario.save();
-    return usuario;
+
+    const mensajes = await Mensaje.find({ $or : [{de: uid},{para: uid}]}).sort({createdAt: 'desc'});
+    let arreglouser = [];
+    for (let i = 0; i < mensajes.length; i++) {
+        let dato1=mensajes[i].de+''; 
+        let dato2= mensajes[i].para+'';
+        if(arreglouser.includes(dato1)){
+        }else{
+          arreglouser.push(dato1);
+        }
+        if(arreglouser.includes(dato2)){
+            }else{
+               arreglouser.push(dato2);
+       
+            }
+    }
+    return arreglouser;
+
+
 }
 const userdesconectado = async(uid) =>{
     const usuario = await Usuario.findById(uid);
@@ -40,6 +58,9 @@ const usuariosactivos = async(uid) =>{
     
     return usuarioschat;
 }
+
+
+
 const savemessage = async(mensaje) =>{
     try {
         const mensaj = new Mensaje(mensaje);
@@ -118,6 +139,23 @@ const eliminarparrafoproducto = async(pid,index) =>{
          console.log(error);
      }
 }
+const eliminarproductocarrito = async(pid,uid) =>{
+        try{
+            await Usuario.findByIdAndUpdate(uid,{
+                $pull: { carrito : pid }  
+               });
+            return {
+                ok:true,
+                msg:'se borro correctamente'
+            }
+         } catch (error) {
+            return {
+                ok:false,
+                msg:'No se pudo Borra con exito'
+            }
+             console.log(error);
+         }
+}
 
 
    const eliminarfotoproductoadicional = async(url,pid) =>{
@@ -157,6 +195,19 @@ const eliminarparrafoproducto = async(pid,index) =>{
              console.log(error);
          }
         }
+
+        const cargarproductoscarrito = async(uid) =>{
+            const user = await Usuario.findById(uid);
+            const carrito = [...user.carrito];
+            let arreglocarrito = [];
+                for (let i = 0; i < carrito.length; i++) {
+                const produc = await Producto.findById(carrito[i]);
+                arreglocarrito.push( produc )
+            }
+            
+            return arreglocarrito;
+        }
+        
 
 const actualizarfotoperfil = async(url,uid) =>{
     try {
@@ -246,5 +297,7 @@ module.exports = {
     adicionarfotoproducto,
     eliminarparrafoproducto,
     adicionarParrafoproducto,
-    guardarcarritoproducto
+    guardarcarritoproducto,
+    cargarproductoscarrito,
+    eliminarproductocarrito
 }

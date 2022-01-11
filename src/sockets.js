@@ -1,4 +1,4 @@
-const { userconectado, modificardatosproducto,eliminarfotoproductoadicional,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
+const { userconectado, modificardatosproducto,eliminarfotoproductoadicional,eliminarproductocarrito,cargarproductoscarrito,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 const cloudinary = require('./utils/cloudinary');
 const {nanoid} = require('nanoid');
@@ -19,14 +19,21 @@ class Sockets {
                return socket.disconnect();
            }
           
-           await userconectado(uid);
+           const informarActivo = await userconectado(uid);
+           for (let i = 0; i < informarActivo.length; i++) {
+            const pos = informarActivo[i];
+            console.log(pos)
 
+            if(pos !== uid){
+            this.io.to(pos).emit('lista-usuarios',await usuariosactivos(pos));
+            }
+        }
            console.log('cliente conectado')
             
             socket.join( uid );
            
-            this.io.emit('lista-usuarios',await usuariosactivos(uid));
-            
+            this.io.to(uid).emit('lista-usuarios',await usuariosactivos(uid));
+            this.io.to(uid).emit('lista-carrito',await cargarproductoscarrito(uid));     
             //mandar mensajes a los dos chats que se estan conectando
             socket.on('mensaje', async (payload)=>{
                const mensaje = await savemessage(payload);
@@ -75,6 +82,16 @@ class Sockets {
                       console.log(e);
                   }
              })
+             //eliminar producto carrito 
+             socket.on('eliminarproductocarrito', async ({pid})=>{
+                try{
+                    const res = await eliminarproductocarrito(pid,uid);
+                    this.io.to(uid).emit('lista-carrito',await cargarproductoscarrito(uid));     
+                    this.io.to(uid).emit('eliminarproductocarrito',res);
+                }catch (e){
+                    console.log(e);
+                }
+           })
              //eliminar Parrafo de producto
              socket.on('productoparrafoeliminar', async ({pid,index})=>{
                 try{
@@ -88,6 +105,7 @@ class Sockets {
             socket.on('guardarcarrito', async ({pid})=>{
                   try{
                     const res = await guardarcarritoproducto(uid,pid);
+                    this.io.to(uid).emit('lista-carrito',await cargarproductoscarrito(uid));     
                     this.io.to(uid).emit('guardarcarrito',res);
                   }catch (e){
                       console.log(e);
@@ -166,12 +184,15 @@ class Sockets {
              socket.on('disconnect',async ()=>{
                  console.log('cliente desconectado')
                 await userdesconectado(uid);
-                 this.io.emit('lista-usuarios',await usuariosactivos());
+                 const res = await usuariosactivos(uid);
+                 for (let i = 0; i < res.length; i++) {
+                    const pos = res[i]._id + '';
+                    if(pos !== uid){
+                    this.io.to(pos).emit('lista-usuarios',await usuariosactivos(pos));
+                    }
+                }
                 })
-            
-        
         }
-        
         );
     }
 
