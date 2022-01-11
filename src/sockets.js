@@ -22,8 +22,6 @@ class Sockets {
            const informarActivo = await userconectado(uid);
            for (let i = 0; i < informarActivo.length; i++) {
             const pos = informarActivo[i];
-            console.log(pos)
-
             if(pos !== uid){
             this.io.to(pos).emit('lista-usuarios',await usuariosactivos(pos));
             }
