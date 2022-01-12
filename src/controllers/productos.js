@@ -148,9 +148,30 @@ try {
         }
 
         }
+
+        const informacionmostrarcategoria = async (req,res) => {
+          const categoriabuscar = req.params.categoria;
+         try{ 
+          const filtervar = await Producto.find({ "detalles.Categoria": categoriabuscar }).sort({creacion: 'desc'}).limit(30);
+          console.log(filtervar)
+              res.json({
+                  ok:true,
+                  filtervar
+                  })
+
+                  }catch (error) {
+              console.log(error);
+              res.json({
+                  ok:false,
+                  msg:'no se encontro producto'
+              })
+          }
+  
+          }
     
 
 module.exports ={
     pedirproducto,
-    informacionAdicional
+    informacionAdicional,
+    informacionmostrarcategoria
 }
