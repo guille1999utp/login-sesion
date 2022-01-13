@@ -28,10 +28,27 @@ const crearproducto = async (req,res) => {
         console.log(error)
     }
     }
+
+    
+const productosUserMostrar = async (req,res) => {
+    const miId = req.params.user;
+    try {
+        const producto = await Producto.find( {de: miId }).limit(20);
+        console.log(producto)
+        res.json({
+            ok:true,
+            producto:producto
+        })
+    } catch (error) {
+        console.log(error)
+    }
+    }
+    
     
     
 
 module.exports ={
     ordenemisor,
-    crearproducto
+    crearproducto,
+    productosUserMostrar
 }
