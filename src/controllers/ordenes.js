@@ -34,7 +34,6 @@ const productosUserMostrar = async (req,res) => {
     const miId = req.params.user;
     try {
         const producto = await Producto.find( {de: miId }).limit(20);
-        console.log(producto)
         res.json({
             ok:true,
             producto:producto

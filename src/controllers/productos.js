@@ -1,4 +1,5 @@
 const Producto = require('../models/producto');
+const {mercadopago} = require('../utils/mercadoPago');
 
 const pedirproducto = async (req,res) => {
     const producto = req.params.producto;
@@ -133,7 +134,6 @@ try {
             }   else{
               console.log('no entro a menor');
             }
-            console.log(filtervar)
 
             res.json({
                 ok:true,
@@ -153,7 +153,6 @@ try {
           const categoriabuscar = req.params.categoria;
          try{ 
           const filtervar = await Producto.find({ "detalles.Categoria": categoriabuscar }).sort({creacion: 'desc'}).limit(30);
-          console.log(filtervar)
               res.json({
                   ok:true,
                   filtervar
@@ -166,12 +165,55 @@ try {
                   msg:'no se encontro producto'
               })
           }
-  
           }
+          const PagarProducto = async (req,res) => {
+            const categoriabuscar = req.params.id;
+            const producto = await Producto.findById( categoriabuscar );
+            console.log(producto)
+            let preference = {
+              items: [
+                  {
+                      title: producto.titulo,
+                      unit_price: parseInt(producto.detalles[0].Precio),
+                      quantity: 1,
+                  }
+              ],
+              back_urls: {
+                  "success": "http://localhost:3000/",
+                  "failure": "http://localhost:3000/",
+                  "pending": "http://localhost:3000/"
+              },
+              auto_return: "approved",
+          };
+          
     
+              mercadopago.preferences.create(preference)
+              .then(function (response) {
+                // En esta instancia deberás asignar el valor dentro de response.body.id por el ID de preferencia solicitado en el siguiente paso
+                res.json({
+                  global: response.body.id
+                });
+              })
+              .catch(function (error) {
+                console.log(error);
+              });              
+
+            }
+    
+            const FeedBack = async (req,res) => {
+              console.log(req)
+              res.json({
+                Payment: req.query.payment_id,
+                Status: req.query.status,
+                MerchantOrder: req.query.merchant_order_id
+              });
+              }
+      
 
 module.exports ={
     pedirproducto,
     informacionAdicional,
-    informacionmostrarcategoria
+    informacionmostrarcategoria,
+    PagarProducto,
+    FeedBack
 }
