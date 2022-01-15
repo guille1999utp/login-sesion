@@ -169,7 +169,6 @@ try {
           const PagarProducto = async (req,res) => {
             const categoriabuscar = req.params.id;
             const datos = req.body.items;
-            console.log(req)
             const producto = await Producto.findById( categoriabuscar );
             let preference = {
               payer:{
@@ -206,9 +205,9 @@ try {
                   }
               ],
               back_urls: {
-                  "success": "http://localhost:3000/feedback/",
-                  "failure": "http://localhost:3000/feedback/",
-                  "pending": "http://localhost:3000/feedback/"
+                  "success": `http://localhost:3000/feedback/${categoriabuscar}`,
+                  "failure": `http://localhost:3000/feedback/${categoriabuscar}`,
+                  "pending": `http://localhost:3000/feedback/${categoriabuscar}`
               },
               auto_return: "approved",
           };
@@ -230,7 +229,6 @@ try {
             }
     
             const FeedBack = async (req,res) => {
-              console.log(req)
               res.json({
                 ok:true,
                 Payment: req.query.payment_id,

@@ -118,6 +118,31 @@ const subirproductoTodo = async(url,uid,producto) =>{
             console.log(error);
         }
    }
+
+   const adicionarproductocomprado = async(uid, codigo, pid) =>{
+    try{
+        console.log(codigo,pid)
+        const procomprado =  await Producto.findById(pid);
+        const filtervar = await Usuario.find({ "productosComprados.codigoProducto": codigo });
+        if(filtervar.length === 0){
+            console.log('entro');
+            await Usuario.findByIdAndUpdate(uid,{
+               $addToSet: { productosComprados : {
+                   codigoProducto: codigo,
+                   secure_url:procomprado.fotosdescripsion[0], 
+                   titulo: procomprado.titulo,
+                   descripsion: procomprado.textdescripsion[0]
+               } }  
+              });
+        }else{
+            console.log('ya existe mai')
+        }
+     } catch (error) {
+         console.log(error);
+     }
+}
+
+
    const adicionarParrafoproducto = async(Parrafo,pid) =>{
     try{
         await Producto.findByIdAndUpdate(pid,{
@@ -299,5 +324,6 @@ module.exports = {
     adicionarParrafoproducto,
     guardarcarritoproducto,
     cargarproductoscarrito,
-    eliminarproductocarrito
+    eliminarproductocarrito,
+    adicionarproductocomprado
 }
