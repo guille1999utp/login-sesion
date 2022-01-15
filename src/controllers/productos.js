@@ -168,20 +168,47 @@ try {
           }
           const PagarProducto = async (req,res) => {
             const categoriabuscar = req.params.id;
+            const datos = req.body.items;
+            console.log(req)
             const producto = await Producto.findById( categoriabuscar );
-            console.log(producto)
             let preference = {
+              payer:{
+              name: datos.nombre,
+              phone:{
+              number: parseInt(datos.telefono)
+              },
+              address:{
+                zip_code: datos.postal,
+                street_name: datos.barrio,
+                street_number: parseInt(datos.street_number)
+              },
+              email: datos.email
+              },
+              shipments:{
+                receiver_address:{
+                  zip_code:datos.postal,
+                  street_name: datos.barrio,
+                  street_number: parseInt(datos.street_number),
+                  floor: datos.floor,
+                  apartment: datos.apartment,
+                  city_name: datos.ciudad,
+                  state_name: datos.estado,
+                  country_name: 'colombia'
+                }
+              },
+              additional_info: datos.anadirinfo,
               items: [
                   {
                       title: producto.titulo,
                       unit_price: parseInt(producto.detalles[0].Precio),
                       quantity: 1,
+                      description: producto.textdescripsion[0]
                   }
               ],
               back_urls: {
-                  "success": "http://localhost:3000/",
-                  "failure": "http://localhost:3000/",
-                  "pending": "http://localhost:3000/"
+                  "success": "http://localhost:3000/feedback/",
+                  "failure": "http://localhost:3000/feedback/",
+                  "pending": "http://localhost:3000/feedback/"
               },
               auto_return: "approved",
           };
@@ -190,8 +217,10 @@ try {
               mercadopago.preferences.create(preference)
               .then(function (response) {
                 // En esta instancia deberás asignar el valor dentro de response.body.id por el ID de preferencia solicitado en el siguiente paso
+                console.log(response)
                 res.json({
-                  global: response.body.id
+                  global: response.body.id,
+                  postman: response
                 });
               })
               .catch(function (error) {
@@ -203,9 +232,11 @@ try {
             const FeedBack = async (req,res) => {
               console.log(req)
               res.json({
+                ok:true,
                 Payment: req.query.payment_id,
                 Status: req.query.status,
-                MerchantOrder: req.query.merchant_order_id
+                MerchantOrder: req.query.merchant_order_id,
+                Typepago: req.query.payment_type
               });
               }
       
