@@ -233,6 +233,12 @@ const eliminarproductocarrito = async(pid,uid) =>{
             return arreglocarrito;
         }
         
+        const cargarproductoscomprados= async(uid) =>{
+            const user = await Usuario.findById(uid);
+            const compras = [...user.productosComprados];
+            return compras;
+        }
+        
 
 const actualizarfotoperfil = async(url,uid) =>{
     try {
@@ -325,5 +331,6 @@ module.exports = {
     guardarcarritoproducto,
     cargarproductoscarrito,
     eliminarproductocarrito,
-    adicionarproductocomprado
+    adicionarproductocomprado,
+    cargarproductoscomprados
 }

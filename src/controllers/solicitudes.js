@@ -13,8 +13,29 @@ try {
     console.log(error)
 }
 }
-
+const consultarpagos = async (req,res) => {
+    const pago = req.params.id;
+    const pagodetalles = await fetch(`https://api.mercadopago.com/v1/payments/${pago}/?access_token=${process.env.ACCESS_TOKEN}`,{
+        method: "GET"
+      });
+    try {
+        console.log(pagodetalles)
+        if(pagodetalles.status !== 404){
+            res.json({
+                ok:true,
+                pagodetalles
+            })
+        }
+    } catch (error) {
+        console.log(error)
+        res.json({
+            ok:true,
+            msg: 'error al solicitar el pago'
+        })
+    }
+    }
 
 module.exports ={
-    solicitudes
+    solicitudes,
+    consultarpagos
 }
