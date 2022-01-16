@@ -170,15 +170,17 @@ try {
             const categoriabuscar = req.params.id;
             const datos = req.body.items;
             const producto = await Producto.findById( categoriabuscar );
+            console.log(datos)
             let preference = {
               payer:{
               name: datos.nombre,
+              surname:datos.apellidos,
               phone:{
               number: parseInt(datos.telefono)
               },
               address:{
                 zip_code: datos.postal,
-                street_name: datos.barrio,
+                street_name: datos.Barrio,
                 street_number: parseInt(datos.street_number)
               },
               email: datos.email
@@ -186,7 +188,7 @@ try {
               shipments:{
                 receiver_address:{
                   zip_code:datos.postal,
-                  street_name: datos.barrio,
+                  street_name: datos.Barrio,
                   street_number: parseInt(datos.street_number),
                   floor: datos.floor,
                   apartment: datos.apartment,
@@ -197,7 +199,8 @@ try {
               },
               additional_info: datos.anadirinfo,
               items: [
-                  {
+                  { 
+                      picture_url: datos.picture_url,
                       title: producto.titulo,
                       unit_price: parseInt(producto.detalles[0].Precio),
                       quantity: 1,
@@ -211,7 +214,7 @@ try {
               },
               auto_return: "approved",
           };
-          
+          console.log(preference)
     
               mercadopago.preferences.create(preference)
               .then(function (response) {

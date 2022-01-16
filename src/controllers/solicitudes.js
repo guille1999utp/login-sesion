@@ -1,5 +1,5 @@
 const Ordenproducto = require('../models/ordenar');
-
+const fetch = require('node-fetch');
 const solicitudes = async (req,res) => {
 const miId = req.uid;
 const limit = req.header('limit');
@@ -15,15 +15,18 @@ try {
 }
 const consultarpagos = async (req,res) => {
     const pago = req.params.id;
-    const pagodetalles = await fetch(`https://api.mercadopago.com/v1/payments/${pago}/?access_token=${process.env.ACCESS_TOKEN}`,{
-        method: "GET"
-      });
     try {
+        const pagodetalles = await fetch(`https://api.mercadopago.com/v1/payments/${pago}/?access_token=${process.env.ACCESS_TOKEN}`).then(res => res.json());
         console.log(pagodetalles)
         if(pagodetalles.status !== 404){
             res.json({
                 ok:true,
-                pagodetalles
+                res:pagodetalles
+            })
+        }else{
+            res.status(404).json({
+                ok:false,
+                msg:'no se encontro el producto'
             })
         }
     } catch (error) {
