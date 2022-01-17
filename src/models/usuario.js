@@ -33,6 +33,10 @@ const userSchema = new Schema({
         type: Array,
         default:[]
     },
+    productosVendidos:  {
+        type: Array,
+        default:[]
+    },
     carrito:  {
         type: Array,
         default:[]

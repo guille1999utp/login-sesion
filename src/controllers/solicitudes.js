@@ -17,7 +17,6 @@ const consultarpagos = async (req,res) => {
     const pago = req.params.id;
     try {
         const pagodetalles = await fetch(`https://api.mercadopago.com/v1/payments/${pago}/?access_token=${process.env.ACCESS_TOKEN}`).then(res => res.json());
-        console.log(pagodetalles)
         if(pagodetalles.status !== 404){
             res.json({
                 ok:true,

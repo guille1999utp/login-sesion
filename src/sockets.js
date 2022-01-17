@@ -1,4 +1,4 @@
-const { userconectado, modificardatosproducto,eliminarfotoproductoadicional,cargarproductoscomprados,eliminarproductocarrito,cargarproductoscarrito,adicionarproductocomprado,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
+const { userconectado, modificardatosproducto,eliminarfotoproductoadicional,cargarproductosvendidos,cargarproductoscomprados,eliminarproductocarrito,cargarproductoscarrito,adicionarproductocomprado,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 const cloudinary = require('./utils/cloudinary');
 const {nanoid} = require('nanoid');
@@ -33,6 +33,7 @@ class Sockets {
             this.io.to(uid).emit('lista-usuarios',await usuariosactivos(uid));
             this.io.to(uid).emit('lista-carrito',await cargarproductoscarrito(uid));     
             this.io.to(uid).emit('lista-compras',await cargarproductoscomprados(uid));     
+            this.io.to(uid).emit('lista-vendidos',await cargarproductosvendidos(uid));     
             //mandar mensajes a los dos chats que se estan conectando
             socket.on('mensaje', async (payload)=>{
                const mensaje = await savemessage(payload);
@@ -101,9 +102,12 @@ class Sockets {
                 }
            })
             //adicionar producto comprado
-           socket.on('anadircompra', async ({codigo,id})=>{
+           socket.on('anadircompra', async ({codigo,id,status})=>{
               try{
-                  await adicionarproductocomprado(uid,codigo,id);
+                const userinformarventa =  await adicionarproductocomprado(uid,codigo,id,status);
+                this.io.to(userinformarventa).emit('lista-vendidos',await cargarproductosvendidos(userinformarventa));     
+                this.io.to(uid).emit('lista-compras',await cargarproductoscomprados(uid));     
+
               }catch (e){
                   console.log(e);
               }

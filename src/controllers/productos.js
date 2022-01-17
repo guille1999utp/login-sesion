@@ -170,7 +170,6 @@ try {
             const categoriabuscar = req.params.id;
             const datos = req.body.items;
             const producto = await Producto.findById( categoriabuscar );
-            console.log(datos)
             let preference = {
               payer:{
               name: datos.nombre,
@@ -202,7 +201,7 @@ try {
                   { 
                       picture_url: datos.picture_url,
                       title: producto.titulo,
-                      unit_price: parseInt(producto.detalles[0].Precio),
+                      unit_price: parseInt(producto.detalles[0].Precio*1.15),
                       quantity: 1,
                       description: producto.textdescripsion[0]
                   }

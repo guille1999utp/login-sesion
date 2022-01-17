@@ -119,21 +119,33 @@ const subirproductoTodo = async(url,uid,producto) =>{
         }
    }
 
-   const adicionarproductocomprado = async(uid, codigo, pid) =>{
+   const adicionarproductocomprado = async(uid, codigo, pid,status) =>{
     try{
-        console.log(codigo,pid)
+        console.log(codigo,pid,status)
         const procomprado =  await Producto.findById(pid);
         const filtervar = await Usuario.find({ "productosComprados.codigoProducto": codigo });
-        if(filtervar.length === 0){
+        if(filtervar.length === 0 && status === 'approved'){
             console.log('entro');
             await Usuario.findByIdAndUpdate(uid,{
                $addToSet: { productosComprados : {
                    codigoProducto: codigo,
                    secure_url:procomprado.fotosdescripsion[0], 
                    titulo: procomprado.titulo,
-                   descripsion: procomprado.textdescripsion[0]
+                   descripsion: procomprado.textdescripsion[0],
+                   precio: parseInt(procomprado.detalles[0].Precio*1.15)
                } }  
               });
+              await Usuario.findByIdAndUpdate(procomprado.de,{
+                $addToSet: { productosVendidos : {
+                    codigoProducto: codigo,
+                    secure_url:procomprado.fotosdescripsion[0], 
+                    titulo: procomprado.titulo,
+                    descripsion: procomprado.textdescripsion[0],
+                    precio: parseInt(procomprado.detalles[0].Precio*1.15),
+                    status
+                } }  
+               });
+               return procomprado.de;
         }else{
             console.log('ya existe mai')
         }
@@ -236,9 +248,14 @@ const eliminarproductocarrito = async(pid,uid) =>{
         const cargarproductoscomprados= async(uid) =>{
             const user = await Usuario.findById(uid);
             const compras = [...user.productosComprados];
-            return compras;
+            return compras.reverse();
         }
-        
+
+        const cargarproductosvendidos= async(uid) =>{
+            const user = await Usuario.findById(uid);
+            const ventas = [...user.productosVendidos];
+            return ventas.reverse();
+        }
 
 const actualizarfotoperfil = async(url,uid) =>{
     try {
@@ -332,5 +349,6 @@ module.exports = {
     cargarproductoscarrito,
     eliminarproductocarrito,
     adicionarproductocomprado,
-    cargarproductoscomprados
+    cargarproductoscomprados,
+    cargarproductosvendidos
 }
