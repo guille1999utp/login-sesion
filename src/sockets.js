@@ -105,8 +105,12 @@ class Sockets {
            socket.on('anadircompra', async ({codigo,id,status})=>{
               try{
                 const userinformarventa =  await adicionarproductocomprado(uid,codigo,id,status);
-                this.io.to(userinformarventa).emit('lista-vendidos',await cargarproductosvendidos(userinformarventa));     
-                this.io.to(uid).emit('lista-compras',await cargarproductoscomprados(uid));     
+                console.log(userinformarventa)
+                if(userinformarventa){
+                    this.io.to(userinformarventa).emit('lista-vendidos',await cargarproductosvendidos(userinformarventa));   
+                    this.io.to(userinformarventa).emit('notificacion-venta');       
+                    this.io.to(uid).emit('lista-compras',await cargarproductoscomprados(uid));     
+                }
 
               }catch (e){
                   console.log(e);

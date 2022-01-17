@@ -145,7 +145,7 @@ const subirproductoTodo = async(url,uid,producto) =>{
                     status
                 } }  
                });
-               return procomprado.de;
+               return procomprado.de + "";
         }else{
             console.log('ya existe mai')
         }
