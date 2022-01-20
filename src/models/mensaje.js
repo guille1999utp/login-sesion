@@ -5,6 +5,7 @@ const Mensaje = new Schema({
         ref: 'Usuario',
         required: true
     },
+    
     para:{
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
@@ -13,6 +14,12 @@ const Mensaje = new Schema({
     mensaje:{
         type: String,
         required : true,
+    },
+    productorden:  {
+        type: Schema.Types.ObjectId,
+        ref: 'Ordenproducto',
+        required : true,
+
     }
 },{
     timestamps : true

@@ -35,6 +35,7 @@ const userdesconectado = async(uid) =>{
     return usuario;
 }
 const usuariosactivos = async(uid) =>{
+    console.log('entro')
     const mensajes = await Mensaje.find({ $or : [{de: uid},{para: uid}]}).sort({createdAt: 'desc'});
     let arreglouser = [];
     for (let i = 0; i < mensajes.length; i++) {
@@ -66,6 +67,40 @@ const savemessage = async(mensaje) =>{
         const mensaj = new Mensaje(mensaje);
         await mensaj.save();
         return mensaj;
+    } catch (error) {
+        console.log(error)
+    }
+}
+const ChatSeleccionadoBorrarNoSeleccionados = async(chat) =>{
+    try {
+        const intento = await Mensaje.find( { $nor : [{de: chat.de,para: chat.para},{de: chat.para,para: chat.de}]});
+        console.log(intento)
+
+        
+        const res = await Mensaje.deleteMany({$and:[{productorden: chat.productorden,$nor : [{de: chat.de,para: chat.para},{de: chat.para,para: chat.de}]}]});
+         console.log(res);   
+         
+         let arreglouser = [];
+         for (let i = 0; i < intento.length; i++) {
+             let dato1=intento[i].de+''; 
+             let dato2= intento[i].para+'';
+             if(arreglouser.includes(dato1)){
+             }else{
+               arreglouser.push(dato1);
+             }
+             if(arreglouser.includes(dato2)){
+                 }else{
+                    arreglouser.push(dato2);
+            
+                 }
+         }
+         const usuarioschat = [];
+         for (let i = 0; i < arreglouser.length; i++) {
+             const usuarios = await Usuario.findById(arreglouser[i]);
+              usuarioschat.push( usuarios._id+'' )
+         }
+         
+        return usuarioschat;
     } catch (error) {
         console.log(error)
     }
@@ -119,15 +154,16 @@ const subirproductoTodo = async(url,uid,producto) =>{
         }
    }
 
-   const adicionarproductocomprado = async(uid, codigo, pid,status) =>{
+   const adicionarproductocomprado = async(uid, codigo, pid,status,preferences) =>{
     try{
-        console.log(codigo,pid,status)
+        console.log(codigo,pid,status,preferences)
         const procomprado =  await Producto.findById(pid);
         const filtervar = await Usuario.find({ "productosComprados.codigoProducto": codigo });
         if(filtervar.length === 0 && status === 'approved'){
             console.log('entro');
             await Usuario.findByIdAndUpdate(uid,{
                $addToSet: { productosComprados : {
+                   preferences,
                    codigoProducto: codigo,
                    secure_url:procomprado.fotosdescripsion[0], 
                    titulo: procomprado.titulo,
@@ -350,5 +386,6 @@ module.exports = {
     eliminarproductocarrito,
     adicionarproductocomprado,
     cargarproductoscomprados,
-    cargarproductosvendidos
+    cargarproductosvendidos,
+    ChatSeleccionadoBorrarNoSeleccionados
 }

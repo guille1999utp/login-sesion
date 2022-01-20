@@ -171,18 +171,27 @@ try {
             const datos = req.body.items;
             const producto = await Producto.findById( categoriabuscar );
             let preference = {
+              transaction_amount: parseInt(producto.detalles[0].Precio*1.15),
+                net_amount: parseInt((producto.detalles[0].Precio*1.15)*0.968-800),
+                taxes:[{
+                        value: parseInt(producto.detalles[0].Precio*1.15)-parseInt((producto.detalles[0].Precio*1.15)*0.968-800),
+                        type: "IVA"
+                }],
+              binary_mode: true,
               payer:{
               name: datos.nombre,
               surname:datos.apellidos,
+              email: datos.email,
               phone:{
-              number: parseInt(datos.telefono)
+              number: parseInt(datos.telefono),
+              area_code: "57",
               },
               address:{
                 zip_code: datos.postal,
                 street_name: datos.Barrio,
                 street_number: parseInt(datos.street_number)
               },
-              email: datos.email
+        
               },
               shipments:{
                 receiver_address:{
@@ -233,6 +242,7 @@ try {
             const FeedBack = async (req,res) => {
               res.json({
                 ok:true,
+                Preference_id: req.query.preference_id,
                 Payment: req.query.payment_id,
                 Status: req.query.status,
                 MerchantOrder: req.query.merchant_order_id,

@@ -44,8 +44,32 @@ const consultarpagos = async (req,res) => {
         })
     }
     }
-
+    const consultarpreferences = async (req,res) => {
+        const pago = req.body.preferences;
+        try {
+            const pagodetalles = await fetch(`https://api.mercadopago.com/checkout/preferences/${pago}?access_token=${process.env.ACCESS_TOKEN}`).then(res => res.json());
+            const {card,ip_address, ...dato} = pagodetalles
+            if(pagodetalles.status !== 404){
+                res.json({
+                    ok:true,
+                    res:dato
+                })
+            }else{
+                res.status(404).json({
+                    ok:false,
+                    msg:'no se encontro el producto'
+                })
+            }
+        } catch (error) {
+            console.log(error)
+            res.json({
+                ok:true,
+                msg: 'error al solicitar el pago'
+            })
+        }
+        }
 module.exports ={
     solicitudes,
-    consultarpagos
+    consultarpagos,
+    consultarpreferences
 }

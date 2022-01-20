@@ -1,4 +1,4 @@
-const { userconectado, modificardatosproducto,eliminarfotoproductoadicional,cargarproductosvendidos,cargarproductoscomprados,eliminarproductocarrito,cargarproductoscarrito,adicionarproductocomprado,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
+const {ChatSeleccionadoBorrarNoSeleccionados, userconectado, modificardatosproducto,eliminarfotoproductoadicional,cargarproductosvendidos,cargarproductoscomprados,eliminarproductocarrito,cargarproductoscarrito,adicionarproductocomprado,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 const cloudinary = require('./utils/cloudinary');
 const {nanoid} = require('nanoid');
@@ -39,6 +39,23 @@ class Sockets {
                const mensaje = await savemessage(payload);
                this.io.to(payload.para).emit('mensaje',mensaje);
                this.io.to(payload.de).emit('mensaje',mensaje);
+               this.io.to(uid).emit('lista-usuarios',await usuariosactivos(uid));
+            })
+      
+             //seleccionar chat y eliminar las demas solicitudes
+             socket.on('seleccionarchat', async (payload)=>{
+                console.log(payload)
+               const mensaje = await ChatSeleccionadoBorrarNoSeleccionados(payload);
+               for (let i = 0; i < mensaje.length; i++) {
+                const pos = mensaje[i];
+                if(pos !== uid){
+                this.io.to(pos).emit('lista-usuarios',await usuariosactivos(pos));
+                if(pos !==payload.de && pos !== payload.para){
+                    this.io.to(pos).emit('resetchat');
+                }
+                }
+            }
+
             })
             //subir producto que se ordenara
             socket.on('orden', async ({solicitud, url})=>{
@@ -102,9 +119,9 @@ class Sockets {
                 }
            })
             //adicionar producto comprado
-           socket.on('anadircompra', async ({codigo,id,status})=>{
+           socket.on('anadircompra', async ({codigo,preference, id,status})=>{
               try{
-                const userinformarventa =  await adicionarproductocomprado(uid,codigo,id,status);
+                const userinformarventa =  await adicionarproductocomprado(uid,codigo,id,status,preference);
                 console.log(userinformarventa)
                 if(userinformarventa){
                     this.io.to(userinformarventa).emit('lista-vendidos',await cargarproductosvendidos(userinformarventa));   
