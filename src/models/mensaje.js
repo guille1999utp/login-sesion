@@ -15,6 +15,14 @@ const Mensaje = new Schema({
         type: String,
         required : true,
     },
+    precio:{
+        type: Number,
+        required : true,
+    },
+    condicion:{
+        type: String,
+        required : true,
+    },
     productorden:  {
         type: Schema.Types.ObjectId,
         ref: 'Ordenproducto',

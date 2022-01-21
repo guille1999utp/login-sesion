@@ -17,9 +17,9 @@ try {
 
 const ordenencontrar = async (req,res) => {
     const miId = req.body.oid;
-    console.log(miId)
     try {
         let producto = await Ordenproducto.findById( miId );
+        console.log(producto)
         if(!producto){
             producto = 0;
         }
