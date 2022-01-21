@@ -40,11 +40,11 @@ class Sockets {
                this.io.to(payload.para).emit('mensaje',mensaje);
                this.io.to(payload.de).emit('mensaje',mensaje);
                this.io.to(uid).emit('lista-usuarios',await usuariosactivos(uid));
+               this.io.to(payload.para).emit('lista-usuarios',await usuariosactivos(payload.para));
             })
       
              //seleccionar chat y eliminar las demas solicitudes
              socket.on('seleccionarchat', async (payload)=>{
-                console.log(payload)
                const mensaje = await ChatSeleccionadoBorrarNoSeleccionados(payload);
                for (let i = 0; i < mensaje.length; i++) {
                 const pos = mensaje[i];
@@ -55,7 +55,7 @@ class Sockets {
                 }
                 }
             }
-
+            this.io.to(uid).emit('lista-usuarios',await usuariosactivos(uid));
             })
             //subir producto que se ordenara
             socket.on('orden', async ({solicitud, url})=>{
@@ -203,10 +203,7 @@ class Sockets {
             //cuando un cliente elimina un producto 
              socket.on('eliminarorden', async ({oid,idfoto})=>{
                  try {     
-                     await cloudinary.cloudinary.uploader.destroy(idfoto, {type : 'upload', resource_type : 'image'}, (res)=>{
-                         return res;
-                    });
-                     await eliminarproducto(oid);
+                     await eliminarproducto(oid,idfoto);
                      this.io.emit('eliminarorden',oid);
                  } catch (error) {
                      console.log(error);

@@ -15,6 +15,22 @@ try {
 }
 }
 
+const ordenencontrar = async (req,res) => {
+    const miId = req.body.oid;
+    console.log(miId)
+    try {
+        let producto = await Ordenproducto.findById( miId );
+        if(!producto){
+            producto = 0;
+        }
+        res.json({
+            ok:true,
+            producto
+        })
+    } catch (error) {
+        console.log(error)
+    }
+    }
 const crearproducto = async (req,res) => {
     const miId = req.uid;
     try {
@@ -49,5 +65,6 @@ const productosUserMostrar = async (req,res) => {
 module.exports ={
     ordenemisor,
     crearproducto,
-    productosUserMostrar
+    productosUserMostrar,
+    ordenencontrar
 }

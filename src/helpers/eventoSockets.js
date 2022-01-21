@@ -35,7 +35,6 @@ const userdesconectado = async(uid) =>{
     return usuario;
 }
 const usuariosactivos = async(uid) =>{
-    console.log('entro')
     const mensajes = await Mensaje.find({ $or : [{de: uid},{para: uid}]}).sort({createdAt: 'desc'});
     let arreglouser = [];
     for (let i = 0; i < mensajes.length; i++) {
@@ -74,12 +73,7 @@ const savemessage = async(mensaje) =>{
 const ChatSeleccionadoBorrarNoSeleccionados = async(chat) =>{
     try {
         const intento = await Mensaje.find( { $nor : [{de: chat.de,para: chat.para},{de: chat.para,para: chat.de}]});
-        console.log(intento)
-
-        
-        const res = await Mensaje.deleteMany({$and:[{productorden: chat.productorden,$nor : [{de: chat.de,para: chat.para},{de: chat.para,para: chat.de}]}]});
-         console.log(res);   
-         
+        const res = await Mensaje.deleteMany({$and:[{productorden: chat.productorden,$nor : [{de: chat.de,para: chat.para},{de: chat.para,para: chat.de}]}]});         
          let arreglouser = [];
          for (let i = 0; i < intento.length; i++) {
              let dato1=intento[i].de+''; 
@@ -357,9 +351,21 @@ const actualizarfotoperfil = async(url,uid) =>{
       }
        
    }
-const eliminarproducto = async (req,res) => {
+const eliminarproducto = async (oid,idfoto) => {
     try {
-        await Ordenproducto.findByIdAndDelete( req );
+        if(idfoto){
+            await cloudinary.cloudinary.uploader.destroy(idfoto, {type : 'upload', resource_type : 'image'}, (res)=>{
+                return res;
+           });
+        }
+        else{
+            console.log('entro')
+            const fotoeliminar = await Ordenproducto.findById(oid);
+            await cloudinary.cloudinary.uploader.destroy(fotoeliminar.idfoto, {type : 'upload', resource_type : 'image'}, (res)=>{
+                return res;
+           });
+        }
+        await Ordenproducto.findByIdAndDelete( oid );
     } catch (error) {
         console.log(error)
     }
