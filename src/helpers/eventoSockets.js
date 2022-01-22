@@ -70,6 +70,16 @@ const savemessage = async(mensaje) =>{
         console.log(error)
     }
 }
+
+const cambiarestadochat = async(productorden) =>{
+    try {
+       const res = await Mensaje.updateMany({productorden:productorden}, {condicion: 'enviado'});
+       console.log(res);
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 const ChatSeleccionadoBorrarNoSeleccionados = async(chat) =>{
     try {
         const intento = await Mensaje.find( { $nor : [{de: chat.de,para: chat.para},{de: chat.para,para: chat.de}]});
@@ -353,23 +363,22 @@ const actualizarfotoperfil = async(url,uid) =>{
    }
 const eliminarproducto = async (oid,idfoto) => {
     try {
-        if(idfoto){
             await cloudinary.cloudinary.uploader.destroy(idfoto, {type : 'upload', resource_type : 'image'}, (res)=>{
                 return res;
            });
-        }
-        else{
-            console.log('entro')
-            const fotoeliminar = await Ordenproducto.findById(oid);
-            await cloudinary.cloudinary.uploader.destroy(fotoeliminar.idfoto, {type : 'upload', resource_type : 'image'}, (res)=>{
-                return res;
-           });
-        }
-        await Ordenproducto.findByIdAndDelete( oid );
+            await Ordenproducto.findByIdAndDelete( oid );
     } catch (error) {
         console.log(error)
     }
     }
+
+    const desactivarproducto = async (oid) => {
+        try {
+           await Ordenproducto.findByIdAndUpdate(oid,{aparecer: false});
+            } catch (error) {
+            console.log(error)
+        }
+        }
 module.exports = {
     modificardatosproducto,
     eliminarfotoproductoadicional,
@@ -379,6 +388,7 @@ module.exports = {
     savemessage,
     subirproducto,
     eliminarproducto,
+    desactivarproducto,
     actualizarfotoperfil,
     agregarfotouser,
     eliminarfotouser,
@@ -393,5 +403,6 @@ module.exports = {
     adicionarproductocomprado,
     cargarproductoscomprados,
     cargarproductosvendidos,
+    cambiarestadochat,
     ChatSeleccionadoBorrarNoSeleccionados
 }

@@ -1,4 +1,4 @@
-const {ChatSeleccionadoBorrarNoSeleccionados, userconectado, modificardatosproducto,eliminarfotoproductoadicional,cargarproductosvendidos,cargarproductoscomprados,eliminarproductocarrito,cargarproductoscarrito,adicionarproductocomprado,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
+const {ChatSeleccionadoBorrarNoSeleccionados,cambiarestadochat, userconectado,desactivarproducto, modificardatosproducto,eliminarfotoproductoadicional,cargarproductosvendidos,cargarproductoscomprados,eliminarproductocarrito,cargarproductoscarrito,adicionarproductocomprado,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 const cloudinary = require('./utils/cloudinary');
 const {nanoid} = require('nanoid');
@@ -42,7 +42,13 @@ class Sockets {
                this.io.to(uid).emit('lista-usuarios',await usuariosactivos(uid));
                this.io.to(payload.para).emit('lista-usuarios',await usuariosactivos(payload.para));
             })
-      
+           //solicitud del cliente mandada, pide confirmacion de llegada
+            socket.on('enviadoproductosolicitud', async ({productorden,de,para})=>{
+            await cambiarestadochat(productorden);
+            this.io.to(para).emit('enviadoproductosolicitud');
+            this.io.to(de).emit('enviadoproductosolicitud');
+             }) 
+
              //seleccionar chat y eliminar las demas solicitudes
              socket.on('seleccionarchat', async (payload)=>{
                const mensaje = await ChatSeleccionadoBorrarNoSeleccionados(payload);
@@ -208,7 +214,15 @@ class Sockets {
                  } catch (error) {
                      console.log(error);
                  }
-             })
+             });
+              //cuando un cliente selecciona un producto del chat
+              socket.on('desactivarproducto', async ({oid})=>{
+                try {     
+                    await desactivarproducto(oid);
+                } catch (error) {
+                    console.log(error);
+                }
+            });
              //cuando el cliente se desconecta emite a todos que el cliente se desconecto
              socket.on('disconnect',async ()=>{
                  console.log('cliente desconectado')

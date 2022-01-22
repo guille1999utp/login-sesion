@@ -7,9 +7,9 @@ const limit = req.header('limit');
 try {
     let solicitudes = [];
     if(Categoria !== 'todos'){
-        solicitudes = await Ordenproducto.find( {$and:[{$nor: [{de:  miId}]} , {categoria: Categoria}]} ).sort({createdAt: 'desc'}).limit(limit*10);
+        solicitudes = await Ordenproducto.find( {$and:[{$nor: [{de:  miId}]} , {categoria: Categoria},{aparecer: true}]} ).sort({createdAt: 'desc'}).limit(limit*10);
     }else{
-       solicitudes = await Ordenproducto.find( { $nor: [{de:  miId}] }).sort({createdAt: 'desc'}).limit(limit*10);
+       solicitudes = await Ordenproducto.find( {$and:[{$nor: [{de:  miId}]},{aparecer: true}]  }).sort({createdAt: 'desc'}).limit(limit*10);
     }
     res.json({
         ok:true,

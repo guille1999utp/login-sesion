@@ -20,8 +20,10 @@ const ordenencontrar = async (req,res) => {
     try {
         let producto = await Ordenproducto.findById( miId );
         console.log(producto)
-        if(!producto){
+        if(!producto.aparecer){
             producto = 0;
+        }else{
+            producto = 1;
         }
         res.json({
             ok:true,

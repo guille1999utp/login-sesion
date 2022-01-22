@@ -11,6 +11,10 @@ const ordenarProducto = new Schema({
         required : true,
         trim: true,
     },
+    aparecer:  {
+        type: Boolean,
+        default: true
+    },
     descripsion:{
         type: String,
         required : true,
