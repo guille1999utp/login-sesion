@@ -28,7 +28,9 @@ const miperfil = async (req,res) => {
         res.json({
             ok:true,
             infoadicional:user.infoadicional,
-            fotosdescripsion: user.fotosdescripsion
+            fotosdescripsion: user.fotosdescripsion,
+            costos: user.dinerosolicitudes
+
         })
     } catch (error) {
         console.log(error);
@@ -47,7 +49,7 @@ const modificacionPerfil = async (req,res) => {
         } );
         res.json({
             ok:true,
-            infoadicional:user.infoadicional
+            infoadicional:user.infoadicional,
         })
     } catch (error) {
         console.log(error);

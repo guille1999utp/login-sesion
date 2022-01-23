@@ -61,8 +61,8 @@ class Sockets {
                  }) 
                  
             //se recibio el producto con total exito
-            socket.on('productorecibidoconexito', async ({productorden,de,para})=>{
-                 await serecibioelproductoconexito(productorden);
+            socket.on('productorecibidoconexito', async ({productorden,de,para,dinero})=>{
+                 await serecibioelproductoconexito(productorden,de,dinero);
                  this.io.to(para).emit('resetchat');
                  this.io.to(de).emit('resetchat');
                  this.io.to(para).emit('lista-usuarios',await usuariosactivos(para));
@@ -250,7 +250,6 @@ class Sockets {
               socket.on('desactivarproducto', async ({oid,para})=>{
                 try {     
                     await desactivarproducto(oid);
-                    console.log(para+'este')
                     this.io.to(para).emit('desactivarproducto',true);
                 } catch (error) {
                     console.log(error);

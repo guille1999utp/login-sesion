@@ -29,6 +29,10 @@ const userSchema = new Schema({
         type: Array,
         default:[]
     },
+    dinerosolicitudes:  {
+        type: Number,
+        default:0
+    },
     productosComprados:  {
         type: Array,
         default:[]

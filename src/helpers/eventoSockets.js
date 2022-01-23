@@ -86,10 +86,14 @@ const cambiarestadochatrecibido = async(productorden) =>{
         console.log(error)
     }
 }
-const serecibioelproductoconexito = async(productorden) =>{
+const serecibioelproductoconexito = async(productorden,uid,dinero) =>{
     try {
         await Mensaje.deleteMany({productorden:productorden});
         await Ordenproducto.findByIdAndDelete( productorden );
+        const res = await Usuario.findById(uid);
+        console.log(res.dinerosolicitudes, dinero, parseInt(dinero));
+        await Usuario.findByIdAndUpdate(uid,{dinerosolicitudes:(parseInt(res.dinerosolicitudes) + parseInt(dinero))});
+
     } catch (error) {
         console.log(error)
     }
@@ -146,7 +150,6 @@ const subirproducto = async(solicitud) =>{
 }
 
 const subirproductoTodo = async(url,uid,producto) =>{
-    console.log(producto)
     const newproducto = {
         de: uid,
         titulo: producto.titulo,
@@ -162,7 +165,6 @@ const subirproductoTodo = async(url,uid,producto) =>{
         fotosdescripsion: [url],
         textdescripsion: producto.descripsion
     }
-    console.log(newproducto)
     try{
           const producto = new Producto(newproducto);
           await producto.save();
@@ -185,11 +187,9 @@ const subirproductoTodo = async(url,uid,producto) =>{
 
    const adicionarproductocomprado = async(uid, codigo, pid,status,preferences) =>{
     try{
-        console.log(codigo,pid,status,preferences)
         const procomprado =  await Producto.findById(pid);
         const filtervar = await Usuario.find({ "productosComprados.codigoProducto": codigo });
         if(filtervar.length === 0 && status === 'approved'){
-            console.log('entro');
             await Usuario.findByIdAndUpdate(uid,{
                $addToSet: { productosComprados : {
                    preferences,
@@ -236,7 +236,6 @@ const eliminarparrafoproducto = async(pid,index) =>{
         const producto =  await Producto.findByIdAndUpdate(pid,{
             $pop: { textdescripsion : eliminar }  
            });
-           console.log(producto);
      } catch (error) {
          console.log(error);
      }
@@ -251,11 +250,11 @@ const eliminarproductocarrito = async(pid,uid) =>{
                 msg:'se borro correctamente'
             }
          } catch (error) {
+             console.log(error);
             return {
                 ok:false,
                 msg:'No se pudo Borra con exito'
             }
-             console.log(error);
          }
 }
 
