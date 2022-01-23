@@ -1,4 +1,4 @@
-const {ChatSeleccionadoBorrarNoSeleccionados,cambiarestadochat, userconectado,desactivarproducto, modificardatosproducto,eliminarfotoproductoadicional,cargarproductosvendidos,cargarproductoscomprados,eliminarproductocarrito,cargarproductoscarrito,adicionarproductocomprado,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
+const {ChatSeleccionadoBorrarNoSeleccionados,chatcanceladasolicitud,cambiarestadochat,serecibioelproductoconexito,cambiarestadochatrecibido, userconectado,desactivarproducto, modificardatosproducto,eliminarfotoproductoadicional,cargarproductosvendidos,cargarproductoscomprados,eliminarproductocarrito,cargarproductoscarrito,adicionarproductocomprado,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 const cloudinary = require('./utils/cloudinary');
 const {nanoid} = require('nanoid');
@@ -45,10 +45,30 @@ class Sockets {
            //solicitud del cliente mandada, pide confirmacion de llegada
             socket.on('enviadoproductosolicitud', async ({productorden,de,para})=>{
             await cambiarestadochat(productorden);
-            this.io.to(para).emit('enviadoproductosolicitud');
-            this.io.to(de).emit('enviadoproductosolicitud');
+            this.io.to(para).emit('recibidoproductosolicitud',de);
+            this.io.to(de).emit('recibidoproductosolicitud',para);
+            this.io.to(para).emit('estadopendiente');
+            this.io.to(de).emit('estadopendiente');
              }) 
+             
+             //solicitud del cliente recibida,confirmacion de llegada
+            socket.on('recibidoproductosolicitud', async ({productorden,de,para})=>{
+                await cambiarestadochatrecibido(productorden);
+                this.io.to(para).emit('recibidoproductosolicitud',de);
+                this.io.to(de).emit('recibidoproductosolicitud',para);
+                this.io.to(para).emit('estadorecibido');
+                this.io.to(de).emit('estadorecibido');
+                 }) 
+                 
+            //se recibio el producto con total exito
+            socket.on('productorecibidoconexito', async ({productorden,de,para})=>{
+                 await serecibioelproductoconexito(productorden);
+                 this.io.to(para).emit('resetchat');
+                 this.io.to(de).emit('resetchat');
+                 this.io.to(para).emit('lista-usuarios',await usuariosactivos(para));
+                 this.io.to(de).emit('lista-usuarios',await usuariosactivos(de));
 
+                 }) 
              //seleccionar chat y eliminar las demas solicitudes
              socket.on('seleccionarchat', async (payload)=>{
                const mensaje = await ChatSeleccionadoBorrarNoSeleccionados(payload);
@@ -62,7 +82,18 @@ class Sockets {
                 }
             }
             this.io.to(uid).emit('lista-usuarios',await usuariosactivos(uid));
+            this.io.to(payload.para).emit('recibidoproductosolicitud', payload.de);
             })
+             //deseleccionar chat y activar las demas solicitudes
+             socket.on('deseleccionarchat', async ({productorden,de,para})=>{
+                await chatcanceladasolicitud(productorden);
+                this.io.to(de).emit('resetchat');
+                this.io.to(para).emit('resetchat');
+                this.io.to(de).emit('lista-usuarios',await usuariosactivos(de));
+                this.io.to(para).emit('lista-usuarios',await usuariosactivos(para));
+
+
+             })
             //subir producto que se ordenara
             socket.on('orden', async ({solicitud, url})=>{
                 solicitud.urlfoto = url.secure_url;
@@ -216,9 +247,11 @@ class Sockets {
                  }
              });
               //cuando un cliente selecciona un producto del chat
-              socket.on('desactivarproducto', async ({oid})=>{
+              socket.on('desactivarproducto', async ({oid,para})=>{
                 try {     
                     await desactivarproducto(oid);
+                    console.log(para+'este')
+                    this.io.to(para).emit('desactivarproducto',true);
                 } catch (error) {
                     console.log(error);
                 }

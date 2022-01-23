@@ -35,7 +35,7 @@ const userdesconectado = async(uid) =>{
     return usuario;
 }
 const usuariosactivos = async(uid) =>{
-    const mensajes = await Mensaje.find({ $or : [{de: uid},{para: uid}]}).sort({createdAt: 'desc'});
+    const mensajes = await Mensaje.find({ $or : [{de: uid,aparecer:true},{para: uid,aparecer:true}]}).sort({createdAt: 'desc'});
     let arreglouser = [];
     for (let i = 0; i < mensajes.length; i++) {
         let dato1=mensajes[i].de+''; 
@@ -73,17 +73,31 @@ const savemessage = async(mensaje) =>{
 
 const cambiarestadochat = async(productorden) =>{
     try {
-       const res = await Mensaje.updateMany({productorden:productorden}, {condicion: 'enviado'});
-       console.log(res);
+       await Mensaje.updateMany({productorden:productorden}, {condicion: 'enviado'});
     } catch (error) {
         console.log(error)
     }
 }
 
+const cambiarestadochatrecibido = async(productorden) =>{
+    try {
+     await Mensaje.updateMany({productorden:productorden}, {condicion: 'recibido'});
+    } catch (error) {
+        console.log(error)
+    }
+}
+const serecibioelproductoconexito = async(productorden) =>{
+    try {
+        await Mensaje.deleteMany({productorden:productorden});
+        await Ordenproducto.findByIdAndDelete( productorden );
+    } catch (error) {
+        console.log(error)
+    }
+}
 const ChatSeleccionadoBorrarNoSeleccionados = async(chat) =>{
     try {
         const intento = await Mensaje.find( { $nor : [{de: chat.de,para: chat.para},{de: chat.para,para: chat.de}]});
-        const res = await Mensaje.deleteMany({$and:[{productorden: chat.productorden,$nor : [{de: chat.de,para: chat.para},{de: chat.para,para: chat.de}]}]});         
+        await Mensaje.deleteMany({$and:[{productorden: chat.productorden,$nor : [{de: chat.de,para: chat.para},{de: chat.para,para: chat.de}]}]});         
          let arreglouser = [];
          for (let i = 0; i < intento.length; i++) {
              let dato1=intento[i].de+''; 
@@ -109,6 +123,17 @@ const ChatSeleccionadoBorrarNoSeleccionados = async(chat) =>{
         console.log(error)
     }
 }
+
+const chatcanceladasolicitud = async(oid) =>{
+    try {
+        await Ordenproducto.findByIdAndUpdate(oid,{aparecer: true});
+        await Mensaje.updateMany({productorden:oid}, {aparecer: false});
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 const subirproducto = async(solicitud) =>{
  try {
        const producto = new Ordenproducto(solicitud);
@@ -404,5 +429,8 @@ module.exports = {
     cargarproductoscomprados,
     cargarproductosvendidos,
     cambiarestadochat,
-    ChatSeleccionadoBorrarNoSeleccionados
+    ChatSeleccionadoBorrarNoSeleccionados,
+    cambiarestadochatrecibido,
+    serecibioelproductoconexito,
+    chatcanceladasolicitud
 }

@@ -19,6 +19,10 @@ const Mensaje = new Schema({
         type: Number,
         required : true,
     },
+    aparecer:  {
+        type: Boolean,
+        default: true
+    },
     condicion:{
         type: String,
         required : true,
