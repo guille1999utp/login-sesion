@@ -1,5 +1,6 @@
 const Producto = require('../models/producto');
 const {mercadopago} = require('../utils/mercadoPago');
+const Usuario = require('../models/usuario');
 
 const pedirproducto = async (req,res) => {
     const producto = req.params.producto;
@@ -166,6 +167,41 @@ try {
               })
           }
           }
+
+          const PagarServicios = async(req,res) =>{
+            const miId = req.uid;
+            const usuario = await Usuario.findById(miId);
+            console.log(usuario)
+            let preference = {
+              items: [
+                {
+                  title: 'LB-SHOP',
+                  unit_price: usuario.dinerosolicitudes,
+                  quantity: 1,
+                  description: 'Recibo Solicitudes'
+                }
+              ],
+              back_urls: {
+                "success": `http://localhost:3000/feedback/${miId}`,
+                "failure": `http://localhost:3000/feedback/${miId}`,
+                "pending": `http://localhost:3000/feedback/${miId}`
+              },
+              auto_return: "approved"
+            };
+            mercadopago.preferences.create(preference)
+            .then(function (response) {
+              // En esta instancia deberás asignar el valor dentro de response.body.id por el ID de preferencia solicitado en el siguiente paso
+              console.log(response)
+              res.json({
+                global: response.body.id
+                });
+            })
+            .catch(function (error) {
+              console.log(error);
+            });              
+
+          }
+
           const PagarProducto = async (req,res) => {
             const categoriabuscar = req.params.id;
             const datos = req.body.items;
@@ -222,7 +258,6 @@ try {
               },
               auto_return: "approved",
           };
-          console.log(preference)
     
               mercadopago.preferences.create(preference)
               .then(function (response) {
@@ -256,5 +291,6 @@ module.exports ={
     informacionAdicional,
     informacionmostrarcategoria,
     PagarProducto,
-    FeedBack
+    FeedBack,
+    PagarServicios
 }

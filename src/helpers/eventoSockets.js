@@ -189,7 +189,8 @@ const subirproductoTodo = async(url,uid,producto) =>{
     try{
         const procomprado =  await Producto.findById(pid);
         const filtervar = await Usuario.find({ "productosComprados.codigoProducto": codigo });
-        if(filtervar.length === 0 && status === 'approved'){
+        if(filtervar.length === 0 && status === 'approved' && procomprado){
+            console.log('entro en producot')
             await Usuario.findByIdAndUpdate(uid,{
                $addToSet: { productosComprados : {
                    preferences,
@@ -214,6 +215,30 @@ const subirproductoTodo = async(url,uid,producto) =>{
         }else{
             console.log('ya existe mai')
         }
+
+        const usuario = await Usuario.findById(uid);
+        console.log(usuario)
+        if( status === 'approved' && usuario.dinerosolicitudes !== 0){
+            console.log(codigo,)
+            console.log('entro en solicitudes')
+            await Usuario.findByIdAndUpdate(uid,{
+               $addToSet: { productosComprados : {
+                   preferences,
+                   codigoProducto: codigo,
+                   secure_url:'https://res.cloudinary.com/dmgfep69f/image/upload/v1642034441/tu86rbwmkpjsyk3vcvr0.jpg', 
+                   titulo: 'LB-SHOP',
+                   descripsion: 'Recibo Solicitudes',
+                   precio: parseInt(usuario.dinerosolicitudes),
+                   status
+               } },
+               dinerosolicitudes:0
+              });
+
+               return usuario._id + "";
+        }else{
+            console.log('compra rechazada')
+        }
+
      } catch (error) {
          console.log(error);
      }
