@@ -99,7 +99,10 @@ class Sockets {
                 solicitud.urlfoto = url.secure_url;
                 solicitud.idfoto = (url.public_id===0)?nanoid():url.public_id;
                 const producto = await subirproducto(solicitud);
-                this.io.emit('orden',producto);
+                console.log(producto)
+                this.io.to(producto.de + '').emit('orden',producto);
+                this.io.emit('ordenagregarsolicitud',producto);
+
              })
               //subir producto con foto 
               socket.on('producto', async ({url,uid,producto})=>{

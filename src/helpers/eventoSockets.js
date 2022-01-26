@@ -3,6 +3,7 @@ const Mensaje = require('../models/mensaje');
 const Ordenproducto = require('../models/ordenar');
 const Producto = require('../models/producto');
 const cloudinary = require('../utils/cloudinary');
+const fetch = require('node-fetch');
 
 const userconectado = async(uid) =>{
     const usuario = await Usuario.findById(uid);
@@ -187,9 +188,12 @@ const subirproductoTodo = async(url,uid,producto) =>{
 
    const adicionarproductocomprado = async(uid, codigo, pid,status,preferences) =>{
     try{
+
         const procomprado =  await Producto.findById(pid);
         const filtervar = await Usuario.find({ "productosComprados.codigoProducto": codigo });
-        if(filtervar.length === 0 && status === 'approved' && procomprado){
+        const pagodetalles = await fetch(`https://api.mercadopago.com/v1/payments/${codigo}/?access_token=${process.env.ACCESS_TOKEN}`).then(res => res.json());
+        console.log(pagodetalles);
+        if(filtervar.length === 0 && status === 'approved' && procomprado && pagodetalles.status_detail === 'accredited'){
             console.log('entro en producot')
             await Usuario.findByIdAndUpdate(uid,{
                $addToSet: { productosComprados : {
@@ -215,10 +219,9 @@ const subirproductoTodo = async(url,uid,producto) =>{
         }else{
             console.log('ya existe mai')
         }
-
         const usuario = await Usuario.findById(uid);
         console.log(usuario)
-        if( status === 'approved' && usuario.dinerosolicitudes !== 0){
+        if( status === 'approved' && usuario.dinerosolicitudes !== 0 && filtervar.length === 0 && pagodetalles.status_detail === 'accredited' ){
             console.log(codigo,)
             console.log('entro en solicitudes')
             await Usuario.findByIdAndUpdate(uid,{
@@ -236,7 +239,7 @@ const subirproductoTodo = async(url,uid,producto) =>{
 
                return usuario._id + "";
         }else{
-            console.log('compra rechazada')
+            console.log('ya existe mai o rechazado mai')
         }
 
      } catch (error) {
