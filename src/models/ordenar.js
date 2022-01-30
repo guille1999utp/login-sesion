@@ -20,10 +20,6 @@ const ordenarProducto = new Schema({
         required : true,
         trim: true
     },
-    fecha:{
-        type: Date,
-        required : true, 
-    },
     urlfoto:{
         type: String,
         required : true,
