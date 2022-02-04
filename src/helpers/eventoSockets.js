@@ -37,6 +37,7 @@ const userdesconectado = async(uid) =>{
 }
 const usuariosactivos = async(uid) =>{
     const mensajes = await Mensaje.find({ $or : [{de: uid,aparecer:true},{para: uid,aparecer:true}]}).sort({createdAt: 'desc'});
+    console.log(mensajes);
     let arreglouser = [];
     for (let i = 0; i < mensajes.length; i++) {
         let dato1=mensajes[i].de+''; 
@@ -92,7 +93,6 @@ const serecibioelproductoconexito = async(productorden,uid,dinero) =>{
         await Mensaje.deleteMany({productorden:productorden});
         await Ordenproducto.findByIdAndDelete( productorden );
         const res = await Usuario.findById(uid);
-        console.log(res.dinerosolicitudes, dinero, parseInt(dinero));
         await Usuario.findByIdAndUpdate(uid,{dinerosolicitudes:(parseInt(res.dinerosolicitudes) + parseInt(dinero))});
 
     } catch (error) {
@@ -192,7 +192,6 @@ const subirproductoTodo = async(url,uid,producto) =>{
         const procomprado =  await Producto.findById(pid);
         const filtervar = await Usuario.find({ "productosComprados.codigoProducto": codigo });
         const pagodetalles = await fetch(`https://api.mercadopago.com/v1/payments/${codigo}/?access_token=${process.env.ACCESS_TOKEN}`).then(res => res.json());
-        console.log(pagodetalles);
         if(filtervar.length === 0 && status === 'approved' && procomprado && pagodetalles.status_detail === 'accredited'){
             console.log('entro en producot')
             await Usuario.findByIdAndUpdate(uid,{
@@ -220,7 +219,6 @@ const subirproductoTodo = async(url,uid,producto) =>{
             console.log('ya existe mai')
         }
         const usuario = await Usuario.findById(uid);
-        console.log(usuario)
         if( status === 'approved' && usuario.dinerosolicitudes !== 0 && filtervar.length === 0 && pagodetalles.status_detail === 'accredited' ){
             console.log(codigo,)
             console.log('entro en solicitudes')
@@ -419,6 +417,31 @@ const eliminarproducto = async (oid,idfoto) => {
                 return res;
            });
             await Ordenproducto.findByIdAndDelete( oid );
+
+            await Mensaje.updateMany( { productorden: oid},{aparecer:false});
+            const intento = await Mensaje.find({ productorden: oid});
+            console.log(intento+ 'orden');
+             let arreglouser = [];
+             for (let i = 0; i < intento.length; i++) {
+                 let dato1=intento[i].de+''; 
+                 let dato2= intento[i].para+'';
+                 if(arreglouser.includes(dato1)){
+                 }else{
+                   arreglouser.push(dato1);
+                 }
+                 if(arreglouser.includes(dato2)){
+                     }else{
+                        arreglouser.push(dato2);
+                
+                     }
+             }
+             const usuarioschat = [];
+             for (let i = 0; i < arreglouser.length; i++) {
+                 const usuarios = await Usuario.findById(arreglouser[i]);
+                  usuarioschat.push( usuarios._id+'' )
+             }
+             
+            return usuarioschat;
     } catch (error) {
         console.log(error)
     }

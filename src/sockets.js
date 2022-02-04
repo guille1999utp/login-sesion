@@ -243,7 +243,15 @@ class Sockets {
             //cuando un cliente elimina un producto 
              socket.on('eliminarorden', async ({oid,idfoto})=>{
                  try {     
-                     await eliminarproducto(oid,idfoto);
+                     const informarActivo = await eliminarproducto(oid,idfoto);
+                     for (let i = 0; i < informarActivo.length; i++) {
+                        const pos = informarActivo[i];
+                        if(pos !== uid){
+                        this.io.to(pos).emit('resetchat');
+                        this.io.to(pos).emit('lista-usuarios',await usuariosactivos(pos));
+                        }
+                    }
+                    this.io.to(uid).emit('lista-usuarios',await usuariosactivos(uid));
                      this.io.emit('eliminarorden',oid);
                  } catch (error) {
                      console.log(error);
