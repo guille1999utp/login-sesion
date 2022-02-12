@@ -92,7 +92,6 @@ const serecibioelproductoconexito = async(productorden,uid,dinero) =>{
         await Mensaje.deleteMany({productorden:productorden});
         await Ordenproducto.findByIdAndDelete( productorden );
         const res = await Usuario.findById(uid);
-        console.log(res.dinerosolicitudes, dinero, parseInt(dinero));
         await Usuario.findByIdAndUpdate(uid,{dinerosolicitudes:(parseInt(res.dinerosolicitudes) + parseInt(dinero))});
 
     } catch (error) {
@@ -150,6 +149,36 @@ const subirproducto = async(solicitud) =>{
     
 }
 
+const userinformarsolicitud = async(Categoria) =>{
+    try {
+        const usuarios = await Usuario.find({ Categoria });
+        let arreglouser = [];
+        for (let i = 0; i < usuarios.length; i++) {
+            let dato=usuarios[i]._id+''; 
+
+            if(arreglouser.includes(dato)){
+            }else{
+              arreglouser.push(dato);
+            }
+        }
+        return arreglouser;
+      } catch (error) {
+       console.log(error);
+      }
+       
+   }
+   
+
+const cambiarCategoria = async(Categoria,uid) =>{
+    try {
+          await Usuario.findByIdAndUpdate(uid,{Categoria})
+          
+      } catch (error) {
+       console.log(error);
+      }
+       
+   }
+
 const subirproductoTodo = async(url,uid,producto) =>{
     const newproducto = {
         de: uid,
@@ -192,7 +221,6 @@ const subirproductoTodo = async(url,uid,producto) =>{
         const procomprado =  await Producto.findById(pid);
         const filtervar = await Usuario.find({ "productosComprados.codigoProducto": codigo });
         const pagodetalles = await fetch(`https://api.mercadopago.com/v1/payments/${codigo}/?access_token=${process.env.ACCESS_TOKEN}`).then(res => res.json());
-        console.log(pagodetalles);
         if(filtervar.length === 0 && status === 'approved' && procomprado && pagodetalles.status_detail === 'accredited'){
             console.log('entro en producot')
             await Usuario.findByIdAndUpdate(uid,{
@@ -220,7 +248,6 @@ const subirproductoTodo = async(url,uid,producto) =>{
             console.log('ya existe mai')
         }
         const usuario = await Usuario.findById(uid);
-        console.log(usuario)
         if( status === 'approved' && usuario.dinerosolicitudes !== 0 && filtervar.length === 0 && pagodetalles.status_detail === 'accredited' ){
             console.log(codigo,)
             console.log('entro en solicitudes')
@@ -419,6 +446,30 @@ const eliminarproducto = async (oid,idfoto) => {
                 return res;
            });
             await Ordenproducto.findByIdAndDelete( oid );
+
+            await Mensaje.updateMany( { productorden: oid},{aparecer:false});
+            const intento = await Mensaje.find({ productorden: oid});
+             let arreglouser = [];
+             for (let i = 0; i < intento.length; i++) {
+                 let dato1=intento[i].de+''; 
+                 let dato2= intento[i].para+'';
+                 if(arreglouser.includes(dato1)){
+                 }else{
+                   arreglouser.push(dato1);
+                 }
+                 if(arreglouser.includes(dato2)){
+                     }else{
+                        arreglouser.push(dato2);
+                
+                     }
+             }
+             const usuarioschat = [];
+             for (let i = 0; i < arreglouser.length; i++) {
+                 const usuarios = await Usuario.findById(arreglouser[i]);
+                  usuarioschat.push( usuarios._id+'' )
+             }
+             
+            return usuarioschat;
     } catch (error) {
         console.log(error)
     }
@@ -428,7 +479,7 @@ const eliminarproducto = async (oid,idfoto) => {
         try {
            await Ordenproducto.findByIdAndUpdate(oid,{aparecer: false});
             } catch (error) {
-            console.log(error)
+            console.log(error +'')
         }
         }
 module.exports = {
@@ -459,5 +510,7 @@ module.exports = {
     ChatSeleccionadoBorrarNoSeleccionados,
     cambiarestadochatrecibido,
     serecibioelproductoconexito,
-    chatcanceladasolicitud
+    chatcanceladasolicitud,
+    cambiarCategoria,
+    userinformarsolicitud
 }
