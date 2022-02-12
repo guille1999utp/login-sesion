@@ -150,6 +150,36 @@ const subirproducto = async(solicitud) =>{
     
 }
 
+const userinformarsolicitud = async(Categoria) =>{
+    try {
+        const usuarios = await Usuario.find({ Categoria });
+        let arreglouser = [];
+        for (let i = 0; i < usuarios.length; i++) {
+            let dato=usuarios[i]._id+''; 
+
+            if(arreglouser.includes(dato)){
+            }else{
+              arreglouser.push(dato);
+            }
+        }
+        return arreglouser;
+      } catch (error) {
+       console.log(error);
+      }
+       
+   }
+   
+
+const cambiarCategoria = async(Categoria,uid) =>{
+    try {
+          await Usuario.findByIdAndUpdate(uid,{Categoria})
+          
+      } catch (error) {
+       console.log(error);
+      }
+       
+   }
+
 const subirproductoTodo = async(url,uid,producto) =>{
     const newproducto = {
         de: uid,
@@ -482,5 +512,7 @@ module.exports = {
     ChatSeleccionadoBorrarNoSeleccionados,
     cambiarestadochatrecibido,
     serecibioelproductoconexito,
-    chatcanceladasolicitud
+    chatcanceladasolicitud,
+    cambiarCategoria,
+    userinformarsolicitud
 }

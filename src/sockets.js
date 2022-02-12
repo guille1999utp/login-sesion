@@ -1,4 +1,4 @@
-const {ChatSeleccionadoBorrarNoSeleccionados,chatcanceladasolicitud,cambiarestadochat,serecibioelproductoconexito,cambiarestadochatrecibido, userconectado,desactivarproducto, modificardatosproducto,eliminarfotoproductoadicional,cargarproductosvendidos,cargarproductoscomprados,eliminarproductocarrito,cargarproductoscarrito,adicionarproductocomprado,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
+const {userinformarsolicitud,cambiarCategoria,ChatSeleccionadoBorrarNoSeleccionados,chatcanceladasolicitud,cambiarestadochat,serecibioelproductoconexito,cambiarestadochatrecibido, userconectado,desactivarproducto, modificardatosproducto,eliminarfotoproductoadicional,cargarproductosvendidos,cargarproductoscomprados,eliminarproductocarrito,cargarproductoscarrito,adicionarproductocomprado,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 const cloudinary = require('./utils/cloudinary');
 const {nanoid} = require('nanoid');
@@ -99,10 +99,20 @@ class Sockets {
                 solicitud.urlfoto = url.secure_url;
                 solicitud.idfoto = (url.public_id===0)?nanoid():url.public_id;
                 const producto = await subirproducto(solicitud);
-                console.log(producto)
-                this.io.to(producto.de + '').emit('orden',producto);
-                this.io.emit('ordenagregarsolicitud',producto);
+                const userinformar = await userinformarsolicitud(solicitud.categoria);
+                this.io.to(uid).emit('orden',producto);
+                
+                for (let i = 0; i < userinformar.length; i++) {
+                    const pos = userinformar[i];
+                    if(pos !== uid){
+                        this.io.to(pos).emit('ordenagregarsolicitud',solicitud.categoria);
+                    }
+                    }
 
+             })
+             //cambiar CATEGORIA producto que se mostrara
+            socket.on('solicitud', async ({Categoria})=>{
+                await cambiarCategoria(Categoria,uid);
              })
               //subir producto con foto 
               socket.on('producto', async ({url,uid,producto})=>{
