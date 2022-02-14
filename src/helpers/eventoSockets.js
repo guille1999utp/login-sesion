@@ -450,7 +450,7 @@ const eliminarproducto = async (oid,idfoto) => {
 
             await Mensaje.updateMany( { productorden: oid},{aparecer:false});
             const intento = await Mensaje.find({ productorden: oid});
-            console.log(intento+ 'orden');
+
              let arreglouser = [];
              for (let i = 0; i < intento.length; i++) {
                  let dato1=intento[i].de+''; 
@@ -481,7 +481,7 @@ const eliminarproducto = async (oid,idfoto) => {
         try {
            await Ordenproducto.findByIdAndUpdate(oid,{aparecer: false});
             } catch (error) {
-            console.log(error)
+            console.log(error +'')
         }
         }
 module.exports = {
