@@ -37,6 +37,7 @@ const userdesconectado = async(uid) =>{
 }
 const usuariosactivos = async(uid) =>{
     const mensajes = await Mensaje.find({ $or : [{de: uid,aparecer:true},{para: uid,aparecer:true}]}).sort({createdAt: 'desc'});
+    console.log(mensajes);
     let arreglouser = [];
     for (let i = 0; i < mensajes.length; i++) {
         let dato1=mensajes[i].de+''; 
@@ -449,6 +450,7 @@ const eliminarproducto = async (oid,idfoto) => {
 
             await Mensaje.updateMany( { productorden: oid},{aparecer:false});
             const intento = await Mensaje.find({ productorden: oid});
+
              let arreglouser = [];
              for (let i = 0; i < intento.length; i++) {
                  let dato1=intento[i].de+''; 

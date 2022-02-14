@@ -45,6 +45,11 @@ const userSchema = new Schema({
         type: Array,
         default:[]
     },
+    Categoria:  {
+        type: String,
+        trim: true,
+        default: 'Repuestos'
+    },
     urlfoto:  {
         type: String,
         trim: true,
