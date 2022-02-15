@@ -80,6 +80,11 @@ const userSchema = new Schema({
        required : true,
 
     },
+    Categoria:{
+        type: String,
+        trim: true,
+        default: 'Repuestos'
+    },
     creacion : {
         type: Date,
         default: Date.now

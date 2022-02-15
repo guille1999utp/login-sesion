@@ -111,7 +111,6 @@ class Sockets {
              })
              //cambiar CATEGORIA producto que se mostrara
             socket.on('solicitud', async ({Categoria})=>{
-                console.log(Categoria)
                 await cambiarCategoria(Categoria,uid);
              })
               //subir producto con foto 
