@@ -23,6 +23,19 @@ const Mensaje = new Schema({
         type: Boolean,
         default: true
     },
+    image:{
+        type:Boolean,
+        default:false
+    },
+    urlfoto:  {
+        type: String,
+        trim: true,
+    },
+    uidfoto:  {
+        type: String,
+        trim: true,
+        unique: true
+    },
     condicion:{
         type: String,
         required : true,

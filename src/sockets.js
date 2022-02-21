@@ -1,4 +1,4 @@
-const {userinformarsolicitud,cambiarCategoria,ChatSeleccionadoBorrarNoSeleccionados,chatcanceladasolicitud,cambiarestadochat,serecibioelproductoconexito,cambiarestadochatrecibido, userconectado,desactivarproducto, modificardatosproducto,eliminarfotoproductoadicional,cargarproductosvendidos,cargarproductoscomprados,eliminarproductocarrito,cargarproductoscarrito,adicionarproductocomprado,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
+const {saveMessageImage,userinformarsolicitud,cambiarCategoria,ChatSeleccionadoBorrarNoSeleccionados,chatcanceladasolicitud,cambiarestadochat,serecibioelproductoconexito,cambiarestadochatrecibido, userconectado,desactivarproducto, modificardatosproducto,eliminarfotoproductoadicional,cargarproductosvendidos,cargarproductoscomprados,eliminarproductocarrito,cargarproductoscarrito,adicionarproductocomprado,eliminarparrafoproducto,guardarcarritoproducto, adicionarParrafoproducto,userdesconectado,adicionarfotoproducto, usuariosactivos,savemessage,subirproducto, eliminarproducto,eliminarproductouser, subirproductoTodo,actualizarfotoperfil,agregarfotouser,eliminarfotouser } = require("./helpers/eventoSockets");
 const { comprobacionJWT } = require("./helpers/jwt");
 const cloudinary = require('./utils/cloudinary');
 const {nanoid} = require('nanoid');
@@ -37,6 +37,15 @@ class Sockets {
             //mandar mensajes a los dos chats que se estan conectando
             socket.on('mensaje', async (payload)=>{
                const mensaje = await savemessage(payload);
+               this.io.to(payload.para).emit('mensaje',mensaje);
+               this.io.to(payload.de).emit('mensaje',mensaje);
+               this.io.to(uid).emit('lista-usuarios',await usuariosactivos(uid));
+               this.io.to(payload.para).emit('lista-usuarios',await usuariosactivos(payload.para));
+            })
+
+            //mandar mensaje a los dos chats en formado imagen
+             socket.on('mensajeimage', async (payload)=>{
+               const mensaje = await saveMessageImage(payload);
                this.io.to(payload.para).emit('mensaje',mensaje);
                this.io.to(payload.de).emit('mensaje',mensaje);
                this.io.to(uid).emit('lista-usuarios',await usuariosactivos(uid));

@@ -72,6 +72,16 @@ const savemessage = async(mensaje) =>{
     }
 }
 
+const saveMessageImage = async(mensaje) =>{
+    try {
+        const mensaj = new Mensaje(mensaje);
+        await mensaj.save();
+        return mensaj;
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 const cambiarestadochat = async(productorden) =>{
     try {
        await Mensaje.updateMany({productorden:productorden}, {condicion: 'enviado'});
@@ -249,7 +259,6 @@ const subirproductoTodo = async(url,uid,producto) =>{
         }
         const usuario = await Usuario.findById(uid);
         if( status === 'approved' && usuario.dinerosolicitudes !== 0 && filtervar.length === 0 && pagodetalles.status_detail === 'accredited' ){
-            console.log(codigo,)
             console.log('entro en solicitudes')
             await Usuario.findByIdAndUpdate(uid,{
                $addToSet: { productosComprados : {
@@ -512,5 +521,6 @@ module.exports = {
     serecibioelproductoconexito,
     chatcanceladasolicitud,
     cambiarCategoria,
-    userinformarsolicitud
+    userinformarsolicitud,
+    saveMessageImage
 }
