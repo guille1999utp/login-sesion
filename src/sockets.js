@@ -36,6 +36,7 @@ class Sockets {
             this.io.to(uid).emit('lista-vendidos',await cargarproductosvendidos(uid));     
             //mandar mensajes a los dos chats que se estan conectando
             socket.on('mensaje', async (payload)=>{
+                payload.uidfoto = nanoid();
                const mensaje = await savemessage(payload);
                this.io.to(payload.para).emit('mensaje',mensaje);
                this.io.to(payload.de).emit('mensaje',mensaje);
